@@ -68,17 +68,6 @@ typedef struct ContextTree {
   
 } ContextTree;
 
-typedef struct ContextTreeNode {
-  ContextTree *tree;
-  double log_kt;
-  double log_probability;
-  uint32_t ones_in_history;
-  uint32_t zeroes_in_history;
-  struct ContextTreeNode *zero_child;
-  struct ContextTreeNode *one_child;
-  HistoryVector *history;
-  ContextVector *context;
-} ContextTreeNode;
 
 
 double log_kt_multiplier(ContextTreeNode *node, bool symbol) {

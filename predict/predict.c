@@ -41,7 +41,7 @@ double predict(ContextTree *tree, bool *bitstring, uint64_t bitstring_size) {
   // Returns the probability of the bitstring conditional on the CT's history
   
   // for now just returning a random probability
-  return ((float) (rand() % 100)) / 100.0;
+  return ((double) (rand() % 100)) / 100.0;
 }
 
 
