@@ -1,3 +1,6 @@
+#include <stdint.h>
+#include <stdbool.h>
+
 //------------- Environment -----------------
 typedef uint32_t Action;
 typedef int32_t Reward;
