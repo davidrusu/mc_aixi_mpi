@@ -16,7 +16,7 @@ struct Environment
 
     // TODO: Find out if this is is the correct way to hold the
     // observations. 
-    b_lst    _observation;
+    u64      _observation;
     
     va_list* _options;
 
@@ -72,10 +72,18 @@ static void * Environment_str ( void * _self )
 
 static void * Environment_action_bits ( void * _self )
 {
+    struct Environment * self = _self;
     // TODO: DISCUSS BIT STRINGS BEFORE ADDING THIS
     // This should calculate the maximum number of bits needed
     u32 max_bits = 0;
-    u32  = 
+    assert ( self->_valid_actions );
+
+    // The following lines scare me and I do not agree with them
+    u32 last_index = sizeof(self->_valid_actions)/sizeof(bool);
+    
+    for ( last_index--; last_index >= 0; last_index-- )
+        if ( self->_valid_actions[last_index] > 
+
 }
 
 
