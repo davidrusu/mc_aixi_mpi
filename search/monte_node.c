@@ -9,5 +9,5 @@ typedef struct MonteNode {
     // a dictionary of the children to be held, initialized by search.c
     dict_t children;
     dict_t actions;
-    //TODO: children dictionary?
+
 } MonteNode;
