@@ -25,6 +25,11 @@ BitVector *create_bit_vector() {
   return bit_vector;
 }
 
+void destroy_bit_vector(BitVector *bv) {
+  free(bv->bits);
+  free(bv);
+}
+
 void __bv_check_bounds(BitVector *bv, uint64_t index) {
   if (index >= bv->size) {
     printf("BV, Index out of bounds, index: %llu size: %llu\n", index, bv->size);
