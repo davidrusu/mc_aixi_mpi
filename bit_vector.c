@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define DEFAULT_BIT_VECTOR_CAPACITY 16
-#define BIT_VECTOR_GROW_RATE 2.0
+#define BIT_VECTOR_GROW_RATE 2
 
 typedef struct BitVector {
   uint64_t size;
