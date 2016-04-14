@@ -6,7 +6,7 @@
 #include "types.h"
 
 struct Class {
-    void *  ( * __init__ )              ( void * self, va_list args );
+    void *  ( * __init__ )              ( void * self, va_list      args );
     void *  ( * __delete__ )            ( void * self );
     void *  ( * __copy__ )              ( const void * self );
     void *  ( * __str__ )               ( const void * self );
@@ -17,7 +17,7 @@ struct Class {
     void *  ( * percption_bits )        ( const void * self );
     
     void *  ( * _is_valid_action )      ( const void * self, u08   action );
-    void *  ( * _is_valid_observation ) ( const void * self, b_lst observation );
+    void *  ( * _is_valid_observation ) ( const void * self, u32   observation );
     void *  ( * _is_valid_reward )      ( const void * self, u08   reward );
     
     void *  ( * _maximum_action )       ( const void * self );
@@ -28,7 +28,7 @@ struct Class {
     void *  ( * _minimum_observation )  ( const void * self );
     void *  ( * _minimum_reward )       ( const void * self );
 
-    void *  ( * perform_action )        ( const void * self, u08 action );
+    void *  ( * perform_action )        ( const void * self, u08    action );
     void *  ( * print )                 ( const void * self );
 };
 
