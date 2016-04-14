@@ -62,6 +62,23 @@ static void * Environment_cpy ( void * _self )
     return new ( Environment , self->options );
 }
 
+static void * Environment_str ( void * _self )
+{
+    char *  pstring;
+    // TODO: Return a string verson on the class... why?
+    
+    return pstring;
+}
+
+static void * Environment_action_bits ( void * _self )
+{
+    // TODO: DISCUSS BIT STRINGS BEFORE ADDING THIS
+    // This should calculate the maximum number of bits needed
+    u32 max_bits = 0;
+    u32  = 
+}
+
+
 
 static const struct Class _Environment = {
     Environment_init,
@@ -70,7 +87,7 @@ static const struct Class _Environment = {
     Environment_str,
     Environment_action_bits,
     Environment_observation_bits,
-    Environment_reward_btis,
+    Environment_reward_bits,
     Environment_perception_bits,
     Environment_is_valid_action
     Environment_is_valid_observation,
