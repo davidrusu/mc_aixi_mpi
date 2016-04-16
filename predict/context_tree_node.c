@@ -52,7 +52,7 @@ uint32_t ctw_visits(ContextTreeNode *node) {
   return node->ones_in_history + node->zeroes_in_history;
 }
 
-void revert(ContextTreeNode *node, bool symbol) {
+void ctw_node_revert(ContextTreeNode *node, bool symbol) {
   // This is called in a loop from leaf to root, so we know that the
   // node's children have already been treated
   
@@ -82,15 +82,15 @@ void revert(ContextTreeNode *node, bool symbol) {
   ctw_update_log_probability(node);
 }
 
-uint32_t ctw_size(ContextTreeNode *node) {
+uint32_t ctw_node_size(ContextTreeNode *node) {
   uint32_t zero_size = 0;
   if (node->zero_child != NULL) {
-    zero_size = ctw_size(node->zero_child);
+    zero_size = ctw_node_size(node->zero_child);
   }
   
   uint32_t one_size = 0;
   if (node->one_child != NULL) {
-    one_size = ctw_size(node->one_child);
+    one_size = ctw_node_size(node->one_child);
   }
 
   return 1 + zero_size + one_size;
@@ -120,7 +120,7 @@ void ctw_update_log_probability(ContextTreeNode *node) {
   }
 }
 
-void ctw_update(ContextTreeNode *node, bool symbol) {
+void ctw_node_update(ContextTreeNode *node, bool symbol) {
   node->log_kt + ctw_log_kt_multiplier(node, symbol);
 
   ctw_update_log_probability(node, symbol);
