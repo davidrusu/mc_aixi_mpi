@@ -58,7 +58,7 @@ void bv_set(BitVector *bv, uint64_t index, bool bit) {
   bv->bits[index] = bit;
 }
 
-void push(BitVector *bv, bool bit) {
+void bv_push(BitVector *bv, bool bit) {
   if (bv->size == bv->capacity) {
     __bv_grow(bv);
   }
@@ -66,7 +66,7 @@ void push(BitVector *bv, bool bit) {
   bv->size += 1;
 }
 
-bool pop(BitVector *bv) {
+bool bv_pop(BitVector *bv) {
   assert(bv->size > 0);
   bool bit = bv->bits[bv->size-1];
   bv->size -= 1;
