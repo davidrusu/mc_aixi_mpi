@@ -26,7 +26,7 @@ void clear(ContextTree *tree) {
 
 bool *generate_random_bitstring(ContextTree *tree, uint64_t num_bits) {
   // generates a bitstring `num_bits` long sampled from the CT
-
+  
   // for now we just generate a random bitstring
   bool *bits = (bool *) malloc(num_bits * sizeof(bool));
   uint64_t i;
