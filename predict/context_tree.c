@@ -31,211 +31,133 @@ void ctw_clear(ContextTree *tree) {
   ct_list_clear(tree->context);
 }
 
-    def generate_random_symbols(self, symbol_count):
-        """ Returns a symbol string of a specified length by sampling from the context tree.
-            - `symbol_count`: the number of symbols to generate.
-            (Called `genRandomSymbols` in the C++ version.)
-        """
-        symbol_list = self.generate_random_symbols_and_update(symbol_list, symbol_count)
-        self.revert(symbol_count)
+BitVector *ctw_gen_random_symbols(ContextTree *tree, uint64_t n) {
+  BitVector *symbols = ctw_gen_random_symbols_and_update(tree, n);
+  ctw_revert(tree, n);
+  return symbols;
+}
 
-        return symbol_list
-    # end def
+BitVector *ctw_gen_random_symbols_and_update(ContextTree *tree, uint64_t n) {
+  BitVector *symbols = create_bit_vector();
+  uint64_t i;
+  for (i = 0; i < n; i++) {
+    double p = ((double) rand()) / ((double) RAND_MAX);
+    bool symbol;
+    if (p < ctw_predict(tree, true)) {
+      symbol = true;
+    } else {
+      symbol = false;
+    }
+    bv_push(symbols, symbol);
+    ctw_update_symbol(tree, symbol);
+  }
+  return symbols;
+}
 
-    def generate_random_symbols_and_update(self, symbol_count):
-        """ Returns a specified number of random symbols distributed according to
-            the context tree statistics and update the context tree with the newly
-            generated symbols.
-            - `symbol_count`: the number of symbols to generate.
-            (Called `genRandomSymbolsAndUpdate` in the C++ version.)
-        """
+double ctw_predict_symbol(ContextTree *tree, bool symbol) {
+  if (tree->history->size + 1 <= tree->depth) {
+    return 0.5;
+  }
+  double prob_history = tree->root->log_probability;
+  ctw_update_symbol(tree, symbol);
+  double prob_sequence = tree->root->log_probability;
+  ctw_revert(tree, 1);
+  return exp(prob_sequence - prob_history);
+}
 
-        symbol_list = []
-        for i in xrange(0, symbol_count):
-            # Pick either 0 or 1 based on the probability of the symbol 1 occuring in the context tree.
-            symbol = 1 if (random.random() < self.predict(1)) else 0
-            symbol_list += [symbol]
-            self.update(symbol)
-        # end for
+double cte_predict_vector(ContextTree *tree, BitVector *symbols) {
+  if (tree->history->size + symbols->size <= tree->depth) {
+    return pow(0.5, symbols->size);
+  }
 
-        return symbol_list
-    # end def
+  double prob_history = tree->root->log_probability;
+  ctw_update_vector(tree, symbol_list);
+  double prob_sequence = tree->root->log_probability;
+  ctw_revert(tree, symbols->size);
+  return exp(prob_sequence - prob_history);
+}
 
-    def predict(self, symbol_list):
-        """ Returns the conditional probability of a symbol (or a list of symbols), considering the history.
-            Given a history sequence `h` and a symbol `y`, the estimated probability is given by
-              rho(y | h) = rho(hy)/rho(h)
-            where `rho(h) = P_w^epsilon(h)` is the weighted probability estimate of observing `h`
-            evaluated at the root node `epsilon` of the context tree.
-            - `symbol_list` The symbol (or list of symbols) to estimate the conditional probability of.
-                            0 corresponds to `rho(0 | h)` and 1 to `rho(1 | h)`.
-        """
+void ctw_revert(ContextTree *tree, uint64_t n) {
+  uint64_t i;
+  for (i = 0; i < n; i++) {
+    if (tree->history->size == 0) {
+      return;
+    }
+    bool symbol = bv_pop(tree->history);
 
-        # Ensure that we have a list, by making this a list if it's a single symbol.
-        if type(symbol_list) != list:
-            symbol_list = [symbol_list]
-        # end if
+    if (tree->history->size >= tree->depth) {
+      ctw_update_contect(tree);
 
+      uint64_t j;
+      for (j = tree->depth-1; j >= 0; j--) {
+	ctw_node_revert(ct_list_get(tree->context, j), symbol);
+      }
+    }
+  }
+}
 
-        # If there is insufficient context for a prediction, return the uniform
-        # prediction 0.5 ^ length.
-        symbol_list_length = len(symbol_list)
-        if ((len(self.history) + symbol_list_length) <= self.depth):
-            return 0.5 if symbol_list_length == 1 else math.pow(0.5, symbol_list_length)
-        # end if
+void ctw_revert_history(ContextTree *tree, uint64_t n) {
+  // Shrinks the history without affecting the context tree.
 
-        # Calculate the probability of the symbol s given the history h using
-        # p(s | h) = p(hs) / p(h) = exp(ln p(hs) - ln p(h)).
-        prob_history = self.root.log_probability
-        self.update(symbol_list)
-        prob_sequence = self.root.log_probability
-        self.revert(symbol_list_length)
+  asser(tree->history->size >= n);
+  // TODO: this is not very efficient, should add a function to bitvector
+  uint64_t i;
+  for (i = 0; i < n; i++) {
+    bv_pop(tree->history);
+  }
+}
 
-        return math.exp(prob_sequence - prob_history)
-    # end def
+uint64_t ctw_size(ContextTree *tree) {
+  return ctw_node_size(tree->root);
+}
 
-    def revert(self, symbol_count = 1):
-        """ Restores the context tree to its state prior to a specified number of updates.
-     
-            - `num_symbols`: the number of updates (symbols) to revert. (Default of 1.)
-        """
+void ctw_update_symbol(ContextTree *tree, bool symbol) {
+  if (tree->history->size >= tree->depth) {
+    ctw_update_context(tree);
+    uint64_t i;
+    for (i = tree->depth-1; i >= 0; i++) {
+      ctw_node_update(ct_list_get(tree->context, i), symbol);
+    }
+  }
+  bv_push(tree->history, symbol);
+}
 
-        # Traverse the tree from leaf to root according to the context.
-        for i in xrange(0, symbol_count):
-            # Check if we have updates to revert.
-            if len(self.history) == 0:
-                return
-            # end if
+void ctw_update_vector(ContextTree *tree, BitVector *symbols) {
+  uint64_t i;
+  for (i = 0; i < symbols->size; i++) {
+    bool symbol = bv_test(symbols, i);
+    ctw_update_context(tree, symbol);
+  }
+}
 
-            # Get the most recent symbol and delete from the history.
-            symbol = self.history.pop()
+vod ctw_update_context(ContextTree *tree) {
+  assert(tree->history->size >= tree->depth);
+  destroy_ct_node_list(tree->context);
+  tree->context = create_ct_node_list();
+  ct_list_push(tree->context, tree->root);
+  ContextTreeNode *node = tree->root;
+  uint64_t update_depth = 1;
+  uint64_t i;
+  for (i = tree->history->size-1; i >= 0; i--) {
+    bool symbol = bv_test(tree->history, i);
 
-            # Traverse the tree from leaf to root according to the context. Update the
-            # probabilities and symbol counts for each node. Delete unnecessary nodes.
-            if len(self.history) >= self.depth:
-                self.update_context()
-
-                # Step backwards through the nodes in the context in reverse context order.
-                # (Only go as deep as the current tree depth, though.)
-                for context_node in reversed(self.context[:self.depth]):
-                    context_node.revert(symbol)
-                # end for
-            # end if
-        # end for
-    # end def
-
-    def revert_history(self, symbol_count = 1):
-        """ Shrinks the history without affecting the context tree.
-            (Called `revertHistory` in the C++ version.)
-        """
-
-        assert symbol_count > 0, "The given symbol count should be greater than 0."
-        history_length = len(self.history)
-        assert history_length >= symbol_count, "The given symbol count must be greater than the history length."
-
-        new_size = history_length - symbol_count
-        self.history = self.history[:new_size]
-    # end def
-
-    def size(self):
-        """ Returns the number of nodes in the context tree.
-        """
-
-        # Return the value stored and updated by the children nodes.
-        return self.tree_size
-    # end def
-
-    def update(self, symbol_list):
-        """ Updates the context tree with a new (binary) symbol, or a list of symbols.
-            Recalculates the log weighted probabilities and log KT estimates for each affected node.
-            - `symbol_list`: the symbol (or list of symbols) with which to update the tree.
-                              (The context tree is updated with symbols in the order they appear in the list.)
-        """
-
-        # Ensure that we have a list, by making this a list if it's a single symbol.
-        if type(symbol_list) != list:
-            symbol_list = [symbol_list]
-        # end if
-
-        # Traverse the tree from leaf to root according to the context.
-        for symbol in symbol_list:
-            # Update the probabilities and symbol counts for each node.
-            symbol = int(symbol)
-            if len(self.history) >= self.depth:
-                self.update_context()
-
-                # Step backwards through the nodes in the context in reverse context order.
-                # (Only go as deep as the current tree depth, though.)
-                for context_node in reversed(self.context[:self.depth]):
-                    context_node.update(symbol)
-                # end for
-            # end if
-
-            # Add this symbol to the history.
-            self.update_history(symbol)
-        # end for
-    # end def
-
-    def update_context(self):
-        """ Calculates which nodes in the context tree correspond to the current
-            context, and adds them to `context` in order from root to leaf.
-            In particular, `context[0]` will always correspond to the root node
-            and `context[self.depth]` corresponds to the relevant leaf node.
-            Creates the nodes if they do not exist.
-            (Called `updateContext` in the C++ version.)
-        """
-
-        # Ensure that the length of the history is greater than or equal to the tree depth for safety.
-        assert len(self.history) >= self.depth, "The history length must be greater than the tree depth."
-
-        # Traverse the tree from root to leaf according to the context.
-        # Save the path taken and create new nodes as necessary.
-        self.context = [self.root]
-        node = self.root
-        update_depth = 1
-        for symbol in reversed(self.history):
-            # Find the relevant child node of the current node for the current symbol, if it exists.
-            symbol = int(symbol)
-            if symbol in node.children:
-                node = node.children[symbol]
-            else:
-                # No child exists for this symbol.
-
-                # Create a new node for the context, and add it into the tree under the current symbol.
-                new_node = CTWContextTreeNode(tree = self)
-                node.children[symbol] = new_node
-
-                # Increase the size of the tree by 1, for the new node.
-                self.tree_size += 1
-
-                # Move onto this new node.
-                node = new_node
-            # end if
-
-            # Add the node to the context path.
-            self.context += [node]
-
-            # Have we hit the end of the update depth yet?
-            update_depth += 1
-            if update_depth > self.depth:
-                # Yes. Stop updating the context.
-                break
-            # end if
-        # end for
-    # end def
-
-    def update_history(self, symbol_list):
-        """ Appends a symbol (or a list of symbols) to the tree's history without updating the tree.
-            - `symbol_list`: the symbol (or list of symbols) to add to the history.
-            (Called `updateHistory` in the C++ version.)
-        """
-
-        # Ensure that we have a list, by making this a list if it's a single symbol.
-        if type(symbol_list) != list:
-            symbol_list = [symbol_list]
-        # end if
-
-        self.history += symbol_list
-    # end def
-# end class
-*/
+    if (symbol && node->one_child != NULL) {
+      node = node->one_child;
+    } else if (!symbol && node->zero_child != NULL) {
+      node = node->zero_child;
+    } else {
+      ContextTree new_node = ctw_create_node();
+      if (symbol) {
+	node->one_child = new_node;
+      } else {
+	node->zero_child = new_node;
+      }
+      node = new_node;
+    }
+    ct_list_push(tree->context, node);
+    update_depth += 1;
+    if (update_depth > tree->depth) {
+      break;
+    }
+  }
+}

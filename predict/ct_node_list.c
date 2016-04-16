@@ -43,7 +43,7 @@ void __ct_list_grow(CTNodeList *ct_list) {
   ct_list->nodes = new_nodes;
 }
 
-ContextTreeNode *ct_list_test(CTNodeList *ct_list, uint64_t index) {
+ContextTreeNode *ct_list_get(CTNodeList *ct_list, uint64_t index) {
   __ct_list_check_bounds(ct_list, index);
   return ct_list->nodes[index];
 }
