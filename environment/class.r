@@ -16,9 +16,9 @@ struct Class {
     void *  ( * reward_bits )           ( const void * self );
     void *  ( * percption_bits )        ( const void * self );
     
-    void *  ( * _is_valid_action )      ( const void * self, u08   action );
+    void *  ( * _is_valid_action )      ( const void * self, u32   action );
     void *  ( * _is_valid_observation ) ( const void * self, u32   observation );
-    void *  ( * _is_valid_reward )      ( const void * self, u08   reward );
+    void *  ( * _is_valid_reward )      ( const void * self, u32   reward );
     
     void *  ( * _maximum_action )       ( const void * self );
     void *  ( * _maximum_observation )  ( const void * self );
@@ -28,7 +28,7 @@ struct Class {
     void *  ( * _minimum_observation )  ( const void * self );
     void *  ( * _minimum_reward )       ( const void * self );
 
-    void *  ( * perform_action )        ( const void * self, u08    action );
+    void *  ( * perform_action )        ( const void * self, u32    action );
     void *  ( * print )                 ( const void * self );
 };
 
