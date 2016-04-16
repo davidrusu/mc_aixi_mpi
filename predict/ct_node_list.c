@@ -67,3 +67,9 @@ ContextTreeNode *ct_list_pop(CTNodeList *ct_list) {
   ct_list->size -= 1;
   return node;
 }
+
+void ct_list_clear(CTNodeList *ct_list) {
+  // Just sets size to 0
+  // we may want to resize the array if memory is a problem
+  ct_list->size = 0;
+}

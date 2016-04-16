@@ -1,69 +1,35 @@
 #include "context_tree_node.c"
-
+#include "../bit_vector.c"
+#include "ct_node_list.c"
 
 typedef struct ContextTree {
   uint32_t depth;
   ContextTreeNode *root;
+  BitVector *history;
+  CTNodeList *context;
 } ContextTree;
-
-typedef struct CTNodeList {
-  uint32_t size;
-  uint32_t capacity;
-  ContextTreeNode *list;
-}
 
 ContextTree *ctw_create_tree(uint32_t depth) {
   ContextTree *tree = (ContextTree *) malloc(sizeof(ContextTree));
   tree->depth = depth;
   tree->root = ctw_create_node();
-  tree->l
+  tree->history = create_bit_vector();
+  tree->context = create_ct_node_list();
 }
 
-class CTWContextTree:
-    def __init__(self, depth):
-        """ Create a context tree of specified maximum depth.
-            Nodes are created as needed.
-            - `depth`: the maximum depth of the context tree.
-        """
+void ctw_destroy_tree(ContextTree *tree) {
+  ctw_destroy_node(tree->root);
+  destroy_bit_vector(tree->history);
+  destroy_ct_node_list(tree->context);
+  free(tree);
+}
 
-        # An list used to hold the nodes in the context tree that correspond to the current context.
-        # It is important to ensure that `update_context()` is called before accessing the contents
-        # of this list as they may otherwise be inaccurate.
-        self.context = []
-
-        # The maximum depth of the context tree.
-        # (Called `m_depth` in the C++ version.)
-        assert depth >= 0, "The given tree depth must be greater than zero."
-        self.depth = depth
-
-        # The history (a list) of symbols seen by the tree.
-        # (Called `m_history` in the C++ version.)
-        self.history = []
-
-        # The root node of the context tree.
-        # (Called `m_root` in the C++ version.)
-        self.root = CTWContextTreeNode(tree = self)
-
-        # The size of this tree.
-        self.tree_size = 1
-    # end def
-
-    def clear(self):
-        """ Clears the entire context tree including all nodes and history.
-        """
-
-        # Reset the history.
-        self.history = []
-
-        # Set a new root object, and reset the tree size.
-        self.root.tree = None
-        del self.root
-        self.root = CTWContextTreeNode(tree = self)
-        self.tree_size = 1
-
-        # Reset the context.
-        self.context = []
-    # end def
+void ctw_clear(ContextTree *tree) {
+  bv_clear(tree->history);
+  ctw_destroy_node(tree->root);
+  tree->root = ctw_create_node();
+  ct_list_clear(tree->context);
+}
 
     def generate_random_symbols(self, symbol_count):
         """ Returns a symbol string of a specified length by sampling from the context tree.
