@@ -73,3 +73,7 @@ bool bv_pop(BitVector *bv) {
   return bit;
 }
 
+void bv_clear(BitVector *bv) {
+  //we just reset the size to 0, we may want to shrink the list later
+  bv->size = 0;
+}
