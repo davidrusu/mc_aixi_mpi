@@ -1,5 +1,7 @@
 // MACROS
-
+// Written by Robert Morouney
+// April 2016
+// robert@morouney.com
 
 #ifndef MACRO_H
     #define MACRO_H
