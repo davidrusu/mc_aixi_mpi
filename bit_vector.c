@@ -79,6 +79,10 @@ void bv_clear(BitVector *bv) {
 }
 
 void bv_print(BitVector *bv) {
+  printf("Size: %llu\n", bv->size);
+  if (bv->size > 100) {
+    return;
+  }
   uint64_t i;
   for (i = 0; i < bv->size; i++) {
     if (bv_test(bv, i)) {
@@ -86,6 +90,22 @@ void bv_print(BitVector *bv) {
     } else {
       printf("0");
     }
+  }
+  printf("\n");
+}
+
+void bv_print_ascii(BitVector *bv) {
+  uint64_t i;
+  for (i = 0; i < bv->size - (bv->size % 8); i += 8) {
+    char c = 0;
+    uint64_t j;
+    for (j = 0; j < 8; j++) {
+      c = c << 1;
+      if (bv_test(bv, j+i)) {
+	c += 1;
+      }
+    }
+    printf("%c", c);
   }
   printf("\n");
 }
