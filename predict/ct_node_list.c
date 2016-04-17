@@ -1,4 +1,5 @@
-#include "context_tree_node.c"
+//#include "context_tree_node.c"
+#include <errno.h>
 
 typedef struct CTNodeList {
   uint64_t size;
@@ -9,9 +10,12 @@ typedef struct CTNodeList {
 CTNodeList *create_ct_node_list() {
   CTNodeList *node_list = (CTNodeList *) malloc(sizeof(CTNodeList));
   node_list->size = 0;
-  node_list->capacity = DEFAULT_BIT_VECTOR_CAPACITY;
+  node_list->capacity = 8;
   ContextTreeNode **nodes = (ContextTreeNode **) malloc(node_list->capacity * sizeof(ContextTreeNode *));
-  assert(nodes != NULL);
+  if (nodes == NULL) {
+    perror("Failed to allocate nodes list");
+  }
+  
   node_list->nodes = nodes;
   return node_list;
 }
@@ -25,14 +29,14 @@ void destroy_ct_node_list(CTNodeList *ct_list) {
 
 void __ct_list_check_bounds(CTNodeList *ct_list, uint64_t index) {
   if (index >= ct_list->size) {
-    printf("CT, Index out of bounds, index: %llu size: %llu\n", index, ct_list->size);
-    assert(false);
+    fprintf(stderr, "CT, Index out of bounds, index: %llu size: %llu\n", index, ct_list->size);
+    perror("Wowowowow. Out of bounds mannn");
   }
 }
 
 void __ct_list_grow(CTNodeList *ct_list) {
   uint64_t new_capacity = ct_list->capacity * 2;
-  ContextTreeNode *new_nodes = (ContextTreeNode *) malloc(new_capacity * sizeof(ContextTreeNode));
+  ContextTreeNode **new_nodes = (ContextTreeNode **) malloc(new_capacity * sizeof(ContextTreeNode *));
   uint64_t i;
   for (i = 0; i < ct_list->size; i++) {
     new_nodes[i] = ct_list->nodes[i];
@@ -57,7 +61,7 @@ void ct_list_push(CTNodeList *ct_list, ContextTreeNode *node) {
   if (ct_list->size == ct_list->capacity) {
     __ct_list_grow(ct_list);
   }
-  ct_list->nodes[ct_list->size] = bit;
+  ct_list->nodes[ct_list->size] = node;
   ct_list->size += 1;
 }
 

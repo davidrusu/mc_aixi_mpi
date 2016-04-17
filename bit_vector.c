@@ -77,3 +77,15 @@ void bv_clear(BitVector *bv) {
   //we just reset the size to 0, we may want to shrink the list later
   bv->size = 0;
 }
+
+void bv_print(BitVector *bv) {
+  uint64_t i;
+  for (i = 0; i < bv->size; i++) {
+    if (bv_test(bv, i)) {
+      printf("1");
+    } else {
+      printf("0");
+    }
+  }
+  printf("\n");
+}

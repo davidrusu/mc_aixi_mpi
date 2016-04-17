@@ -1,5 +1,7 @@
 #include <math.h>
-#include <stdinf.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <errno.h>
 
 typedef struct ContextTreeNode {
   double log_kt;
@@ -34,6 +36,10 @@ bool ctw_is_leaf_node(ContextTreeNode *node) {
   return node->zero_child == NULL && node->one_child == NULL;
 }
 
+uint32_t ctw_visits(ContextTreeNode *node) {
+  return node->ones_in_history + node->zeroes_in_history;
+}
+
 double ctw_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
   uint32_t numerator;
   if (symbol) {
@@ -45,12 +51,34 @@ double ctw_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
   }
 
   uint32_t denominator = ctw_visits(node);
-  return log((numerator + 0.5) / (denomeinator + 1.0));
+  return log((numerator + 0.5) / (denominator + 1.0));
 }
 
-uint32_t ctw_visits(ContextTreeNode *node) {
-  return node->ones_in_history + node->zeroes_in_history;
+
+void ctw_update_log_probability(ContextTreeNode *node) {
+  if (ctw_is_leaf_node(node)) {
+    node->log_probability = node->log_kt;
+  } else {
+    double log_child_prob = 0.0;
+    if (node->zero_child != NULL) {
+      log_child_prob += node->zero_child->log_probability;
+    }
+    if (node->one_child != NULL) {
+      log_child_prob += node->one_child->log_probability;
+    }
+
+    double a, b;
+    if (node->log_kt >= log_child_prob) {
+      a = node->log_kt;
+      b = log_child_prob;
+    } else {
+      a = log_child_prob;
+      b = node->log_kt;
+    }
+    node->log_probability = log(0.5) + a + log1p(exp(b - a));
+  }
 }
+
 
 void ctw_node_revert(ContextTreeNode *node, bool symbol) {
   // This is called in a loop from leaf to root, so we know that the
@@ -96,34 +124,10 @@ uint32_t ctw_node_size(ContextTreeNode *node) {
   return 1 + zero_size + one_size;
 }
 
-void ctw_update_log_probability(ContextTreeNode *node) {
-  if (ctw_is_leaf_node(node)) {
-    node->log_probability = node->log_kt;
-  } else {
-    double log_child_prob = 0.0;
-    if (node->zero_child != null) {
-      log_child_prob += node->zero_child->log_probability;
-    }
-    if (node->one_child != null) {
-      log_child_prob += node->one_child->log_probability;
-    }
-
-    double a, b;
-    if (node->log_kt >= log_child_prob) {
-      a = node->log_kt;
-      b = log_child_prob;
-    } else {
-      a = log_child_prob;
-      b = node->log_kt;
-    }
-    node->log_probability = log(0.5) + a + log1p(exp(b - a));
-  }
-}
-
 void ctw_node_update(ContextTreeNode *node, bool symbol) {
-  node->log_kt + ctw_log_kt_multiplier(node, symbol);
+  node->log_kt += ctw_log_kt_multiplier(node, symbol);
 
-  ctw_update_log_probability(node, symbol);
+  ctw_update_log_probability(node);
   
   if (symbol) {
     node->ones_in_history += 1;
