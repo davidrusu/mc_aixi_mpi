@@ -74,7 +74,6 @@ void ctw_update_context(ContextTree *tree) {
   }
 }
 
-
 void ctw_revert(ContextTree *tree, uint64_t n) {
   uint64_t i;
   for (i = 0; i < n; i++) {
@@ -93,7 +92,6 @@ void ctw_revert(ContextTree *tree, uint64_t n) {
     }
   }
 }
-
 
 void ctw_update_symbol(ContextTree *tree, bool symbol) {
   if (tree->history->size >= tree->depth) {
@@ -154,13 +152,11 @@ BitVector *ctw_gen_random_symbols_and_update(ContextTree *tree, uint64_t n) {
   return symbols;
 }
 
-
 BitVector *ctw_gen_random_symbols(ContextTree *tree, uint64_t n) {
   BitVector *symbols = ctw_gen_random_symbols_and_update(tree, n);
   ctw_revert(tree, n);
   return symbols;
 }
-
 
 void ctw_revert_history(ContextTree *tree, uint64_t n) {
   // Shrinks the history without affecting the context tree.

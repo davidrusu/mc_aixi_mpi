@@ -9,9 +9,12 @@ int main(int argc, char **argv) {
   printf("Size of ct_node %lu\n", sizeof(ContextTreeNode));
   char pattern[1000];
   ContextTree *tree = ctw_create(8 * 20);
+  
   for (;;) {
-    fgets(pattern, sizeof(pattern), stdin);
-    if (pattern[0] == 'h') {
+    if (fgets(pattern, sizeof(pattern), stdin) == NULL) {
+      continue;
+    }
+    if (pattern[0] == '?') {
       ctw_print(tree);
       continue;
     }
@@ -31,4 +34,3 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
-

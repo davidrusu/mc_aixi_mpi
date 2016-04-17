@@ -47,7 +47,6 @@ double ctw_node_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
   return log((numerator + 0.5) / (denominator + 1.0));
 }
 
-
 void ctw_node_update_log_probability(ContextTreeNode *node) {
   if (ctw_node_is_leaf(node)) {
     node->log_probability = node->log_kt;
@@ -71,7 +70,6 @@ void ctw_node_update_log_probability(ContextTreeNode *node) {
     node->log_probability = log(0.5) + a + log1p(exp(b - a));
   }
 }
-
 
 void ctw_node_revert(ContextTreeNode *node, bool symbol) {
   // This is called in a loop from leaf to root, so we know that the

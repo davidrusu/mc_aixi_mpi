@@ -1,7 +1,6 @@
 #ifndef _CTW_TREE_
 #define _CTW_TREE_
 
-
 #include "context_tree_node.h"
 #include "ctw_list.h"
 
