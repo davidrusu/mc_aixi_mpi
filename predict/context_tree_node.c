@@ -1,18 +1,11 @@
+#include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
+#include "context_tree_node.h"
 
-typedef struct ContextTreeNode {
-  double log_kt;
-  double log_probability;
-  uint32_t ones_in_history;
-  uint32_t zeroes_in_history;
-  struct ContextTreeNode *zero_child;
-  struct ContextTreeNode *one_child;
-} ContextTreeNode;
-
-ContextTreeNode *ctw_create_node() {
+ContextTreeNode *ctw_node_create() {
   ContextTreeNode *node = (ContextTreeNode *) malloc(sizeof(ContextTreeNode));
   node->log_kt = 0.0;
   node->log_probability = 0.0;
@@ -23,24 +16,24 @@ ContextTreeNode *ctw_create_node() {
   return node;
 }
 
-void ctw_destroy_node(ContextTreeNode *node) {
+void ctw_node_free(ContextTreeNode *node) {
   if (node == NULL) {
     return;
   }
-  ctw_destroy_node(node->zero_child);
-  ctw_destroy_node(node->one_child);
+  ctw_node_free(node->zero_child);
+  ctw_node_free(node->one_child);
   free(node);
 }
 
-bool ctw_is_leaf_node(ContextTreeNode *node) {
+bool ctw_node_is_leaf(ContextTreeNode *node) {
   return node->zero_child == NULL && node->one_child == NULL;
 }
 
-uint32_t ctw_visits(ContextTreeNode *node) {
+uint32_t ctw_node_visits(ContextTreeNode *node) {
   return node->ones_in_history + node->zeroes_in_history;
 }
 
-double ctw_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
+double ctw_node_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
   uint32_t numerator;
   if (symbol) {
     // symbol is 1
@@ -50,13 +43,13 @@ double ctw_log_kt_multiplier(ContextTreeNode *node, bool symbol) {
     numerator = node->zeroes_in_history;
   }
 
-  uint32_t denominator = ctw_visits(node);
+  uint32_t denominator = ctw_node_visits(node);
   return log((numerator + 0.5) / (denominator + 1.0));
 }
 
 
-void ctw_update_log_probability(ContextTreeNode *node) {
-  if (ctw_is_leaf_node(node)) {
+void ctw_node_update_log_probability(ContextTreeNode *node) {
+  if (ctw_node_is_leaf(node)) {
     node->log_probability = node->log_kt;
   } else {
     double log_child_prob = 0.0;
@@ -95,19 +88,19 @@ void ctw_node_revert(ContextTreeNode *node, bool symbol) {
   // need to remove redundant nodes, since this has already been called on
   // the node's children, they may have 0 visits now
   if (symbol) {
-    if (node->one_child != NULL && ctw_visits(node->one_child) == 0) {
+    if (node->one_child != NULL && ctw_node_visits(node->one_child) == 0) {
       free(node->one_child);
       node->one_child = NULL;
     }
   } else {
-    if (node->zero_child != NULL && ctw_visits(node->zero_child) == 0) {
+    if (node->zero_child != NULL && ctw_node_visits(node->zero_child) == 0) {
       free(node->zero_child);
       node->zero_child = NULL;
     }
   }
 
-  node->log_kt -= ctw_log_kt_multiplier(node, symbol);
-  ctw_update_log_probability(node);
+  node->log_kt -= ctw_node_log_kt_multiplier(node, symbol);
+  ctw_node_update_log_probability(node);
 }
 
 uint32_t ctw_node_size(ContextTreeNode *node) {
@@ -125,9 +118,9 @@ uint32_t ctw_node_size(ContextTreeNode *node) {
 }
 
 void ctw_node_update(ContextTreeNode *node, bool symbol) {
-  node->log_kt += ctw_log_kt_multiplier(node, symbol);
+  node->log_kt += ctw_node_log_kt_multiplier(node, symbol);
 
-  ctw_update_log_probability(node);
+  ctw_node_update_log_probability(node);
   
   if (symbol) {
     node->ones_in_history += 1;

@@ -1,38 +1,34 @@
-#include "context_tree_node.c"
-#include "../bit_vector.c"
-#include "ct_node_list.c"
+#include <math.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include "../bit_vector.h"
+#include "ctw_list.h"
+#include "context_tree.h"
 
-typedef struct ContextTree {
-  uint32_t depth;
-  ContextTreeNode *root;
-  BitVector *history;
-  CTNodeList *context;
-} ContextTree;
-
-ContextTree *ctw_create_tree(uint32_t depth) {
+ContextTree *ctw_create(uint32_t depth) {
   ContextTree *tree = (ContextTree *) malloc(sizeof(ContextTree));
   tree->depth = depth;
-  tree->root = ctw_create_node();
-  tree->history = create_bit_vector();
-  tree->context = create_ct_node_list();
+  tree->root = ctw_node_create();
+  tree->history = bv_create();
+  tree->context = ctw_list_create();
   return tree;
 }
 
-void ctw_destroy_tree(ContextTree *tree) {
-  ctw_destroy_node(tree->root);
-  destroy_bit_vector(tree->history);
-  destroy_ct_node_list(tree->context);
+void ctw_free(ContextTree *tree) {
+  ctw_node_free(tree->root);
+  bv_free(tree->history);
+  ctw_list_free(tree->context);
   free(tree);
 }
 
 void ctw_clear(ContextTree *tree) {
   bv_clear(tree->history);
-  ctw_destroy_node(tree->root);
-  tree->root = ctw_create_node();
-  ct_list_clear(tree->context);
+  ctw_node_free(tree->root);
+  tree->root = ctw_node_create();
+  ctw_list_clear(tree->context);
 }
-
-
 
 uint64_t ctw_size(ContextTree *tree) {
   return ctw_node_size(tree->root);
@@ -44,12 +40,13 @@ void ctw_print(ContextTree *tree) {
   bv_print(tree->history);
 }
 
-
 void ctw_update_context(ContextTree *tree) {
-  assert(tree->history->size >= tree->depth);
-  destroy_ct_node_list(tree->context);
-  tree->context = create_ct_node_list();
-  ct_list_push(tree->context, tree->root);
+  if (tree->history->size < tree->depth) {
+    perror("Not enough history to update context\n");
+  }
+  ctw_list_free(tree->context);
+  tree->context = ctw_list_create();
+  ctw_list_push(tree->context, tree->root);
   ContextTreeNode *node = tree->root;
   uint64_t update_depth = 1;
   int64_t i;
@@ -61,7 +58,7 @@ void ctw_update_context(ContextTree *tree) {
     } else if (!symbol && node->zero_child != NULL) {
       node = node->zero_child;
     } else {
-      ContextTreeNode *new_node = ctw_create_node();
+      ContextTreeNode *new_node = ctw_node_create();
       if (symbol) {
 	node->one_child = new_node;
       } else {
@@ -69,7 +66,7 @@ void ctw_update_context(ContextTree *tree) {
       }
       node = new_node;
     }
-    ct_list_push(tree->context, node);
+    ctw_list_push(tree->context, node);
     update_depth += 1;
     if (update_depth > tree->depth) {
       break;
@@ -91,7 +88,7 @@ void ctw_revert(ContextTree *tree, uint64_t n) {
 
       int64_t j;
       for (j = tree->depth-1; j >= 0; j--) {
-	ctw_node_revert(ct_list_get(tree->context, j), symbol);
+	ctw_node_revert(ctw_list_get(tree->context, j), symbol);
       }
     }
   }
@@ -103,7 +100,7 @@ void ctw_update_symbol(ContextTree *tree, bool symbol) {
     ctw_update_context(tree);
     int64_t i;
     for (i = tree->depth-1; i >= 0; i--) {
-      ctw_node_update(ct_list_get(tree->context, i), symbol);
+      ctw_node_update(ctw_list_get(tree->context, i), symbol);
     }
   }
   bv_push(tree->history, symbol);
@@ -128,7 +125,7 @@ double ctw_predict_symbol(ContextTree *tree, bool symbol) {
   return exp(prob_sequence - prob_history);
 }
 
-double cte_predict_vector(ContextTree *tree, BitVector *symbols) {
+double ctw_predict_vector(ContextTree *tree, BitVector *symbols) {
   if (tree->history->size + symbols->size <= tree->depth) {
     return pow(0.5, symbols->size);
   }
@@ -141,7 +138,7 @@ double cte_predict_vector(ContextTree *tree, BitVector *symbols) {
 }
 
 BitVector *ctw_gen_random_symbols_and_update(ContextTree *tree, uint64_t n) {
-  BitVector *symbols = create_bit_vector();
+  BitVector *symbols = bv_create();
   uint64_t i;
   for (i = 0; i < n; i++) {
     double p = ((double) rand()) / ((double) RAND_MAX);
@@ -168,7 +165,9 @@ BitVector *ctw_gen_random_symbols(ContextTree *tree, uint64_t n) {
 void ctw_revert_history(ContextTree *tree, uint64_t n) {
   // Shrinks the history without affecting the context tree.
 
-  assert(tree->history->size >= n);
+  if (tree->history->size < n) {
+    perror("not enough history to revert\n");
+  }
   // TODO: this is not very efficient, should add a function to bitvector
   uint64_t i;
   for (i = 0; i < n; i++) {

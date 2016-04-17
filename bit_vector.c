@@ -3,17 +3,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "bit_vector.h"
 
-#define DEFAULT_BIT_VECTOR_CAPACITY 16
-#define BIT_VECTOR_GROW_RATE 2
-
-typedef struct BitVector {
-  uint64_t size;
-  uint64_t capacity;
-  bool *bits;
-} BitVector;
-
-BitVector *create_bit_vector() {
+BitVector *bv_create() {
   BitVector *bit_vector = (BitVector *) malloc(sizeof(BitVector));
   bit_vector->size = 0;
   bit_vector->capacity = DEFAULT_BIT_VECTOR_CAPACITY;
@@ -23,9 +15,18 @@ BitVector *create_bit_vector() {
   return bit_vector;
 }
 
-void destroy_bit_vector(BitVector *bv) {
+void bv_free(BitVector *bv) {
   free(bv->bits);
   free(bv);
+}
+
+BitVector *bv_from_char(char c) {
+  BitVector *bv = bv_create();
+  int64_t j;
+  for (j=sizeof(char) * 8 - 1; j >= 0; j--) {
+    bv_push(bv, (c >> j) % 2 == 1);
+  }
+  return bv;
 }
 
 void __bv_check_bounds(BitVector *bv, uint64_t index) {
