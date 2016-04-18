@@ -1,7 +1,9 @@
 #ifndef _CTW_NODE_
 #define _CTW_NODE_
 
+#include <stdint.h>
 #include <stdbool.h>
+#include "../bit_vector.h"
 
 typedef struct ContextTreeNode {
   double log_kt;

@@ -2,6 +2,9 @@
 #define _BIT_VECTOR_
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdint.h>
+
 #define DEFAULT_BIT_VECTOR_CAPACITY 16
 #define BIT_VECTOR_GROW_RATE 2
 
