@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <errno.h>
 #include "context_tree_node.h"
@@ -125,4 +126,16 @@ void ctw_node_update(ContextTreeNode *node, bool symbol) {
   } else {
     node->zeroes_in_history += 1;
   } 
+}
+
+void ctw_node_print(ContextTreeNode *node) {
+  if (node == NULL) {
+    printf("CTWN NULL\n");
+    return;
+  }
+  printf("---------\n");
+  printf("0: %u 1: %u\n", node->zeroes_in_history, node->ones_in_history);
+  printf("probs: %f %f\n", node->log_probability, node->log_kt);
+  ctw_node_print(node->zero_child);
+  ctw_node_print(node->one_child);
 }

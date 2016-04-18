@@ -27,6 +27,8 @@ void bv_set(BitVector *, uint64_t, bool);
 
 void bv_push(BitVector *, bool);
 
+bool bv_peek(BitVector *);
+
 bool bv_pop(BitVector *);
 
 void bv_clear(BitVector *);
@@ -35,4 +37,7 @@ void bv_print(BitVector *);
 
 void bv_print_ascii(BitVector *);
 
+void bv_save(BitVector *, FILE *);
+
+void bv_load(BitVector *, FILE *);
 #endif

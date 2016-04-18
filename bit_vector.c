@@ -67,6 +67,11 @@ void bv_push(BitVector *bv, bool bit) {
   bv->size += 1;
 }
 
+bool bv_peek(BitVector *bv) {
+  assert(bv->size > 0);
+  return bv->bits[bv->size-1];
+}
+
 bool bv_pop(BitVector *bv) {
   assert(bv->size > 0);
   bool bit = bv->bits[bv->size-1];
@@ -109,4 +114,25 @@ void bv_print_ascii(BitVector *bv) {
     printf("%c", c);
   }
   printf("\n");
+}
+
+void bv_save(BitVector *bv, FILE *fp) {
+  fwrite(&(bv->size), sizeof(uint64_t), 1, fp);
+  uint64_t i;
+  for (i = 0; i < bv->size; i++) {
+    bool bit = bv_test(bv, i);
+    fwrite(&bit, sizeof(bool), 1, fp);
+  }
+}
+
+void bv_load(BitVector *bv, FILE *fp) {
+  bv_clear(bv);
+  uint64_t size;
+  fread(&size, sizeof(uint64_t), 1, fp);
+  uint64_t i;
+  for (i = 0; i < size; i++) {
+    bool bit;
+    fread(&bit, sizeof(bool), 1, fp);
+    bv_push(bv, bit);
+  }
 }

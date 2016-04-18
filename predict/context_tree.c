@@ -80,11 +80,12 @@ void ctw_revert(ContextTree *tree, uint64_t n) {
     if (tree->history->size == 0) {
       return;
     }
+    
     bool symbol = bv_pop(tree->history);
-
+    
     if (tree->history->size >= tree->depth) {
       ctw_update_context(tree);
-
+      
       int64_t j;
       for (j = tree->depth-1; j >= 0; j--) {
 	ctw_node_revert(ctw_list_get(tree->context, j), symbol);
@@ -169,4 +170,101 @@ void ctw_revert_history(ContextTree *tree, uint64_t n) {
   for (i = 0; i < n; i++) {
     bv_pop(tree->history);
   }
+}
+
+void ctw_save(ContextTree *tree, char *file_name) {
+  uint64_t count = 0;
+  bool child_exists = true;
+  bool child_not_exists = false;
+  
+  FILE *fp = fopen(file_name, "w");
+  fwrite(&(tree->depth), sizeof(uint32_t), 1, fp);
+  bv_save(tree->history, fp);
+  
+  CTWNodeList *stack = ctw_list_create();
+  ctw_list_push(stack, tree->root);
+  while (stack->size > 0) {
+    ContextTreeNode *node = ctw_list_pop(stack);
+    fwrite(&(node->log_kt), sizeof(double), 1, fp);
+    fwrite(&(node->log_probability), sizeof(double), 1, fp);
+    fwrite(&(node->ones_in_history), sizeof(uint32_t), 1, fp);
+    fwrite(&(node->zeroes_in_history), sizeof(uint32_t), 1, fp);
+
+    bool zero_child;
+    bool one_child;
+    
+    if (node->one_child != NULL) {
+      ctw_list_push(stack, node->one_child);
+      one_child = true;
+    } else {
+      one_child = false;
+    }
+    
+    if (node->zero_child != NULL) {
+      ctw_list_push(stack, node->zero_child);
+      zero_child = true;
+    } else {
+      zero_child = false;
+    }
+    
+    fwrite(&zero_child, sizeof(bool), 1, fp);
+    fwrite(&one_child, sizeof(bool), 1, fp);
+    count += 1;
+  }
+  fclose(fp);
+  printf("Wrote %llu nodes to %s\n", count, file_name);
+}
+
+void ctw_load(ContextTree *tree, char *file_name) {
+  ctw_clear(tree);
+  
+  uint64_t count = 0;
+  FILE *fp = fopen(file_name, "r");
+  fread(&(tree->depth), sizeof(uint32_t), 1, fp);
+  bv_load(tree->history, fp);
+  printf("Read history\n");
+  
+  CTWNodeList *stack = ctw_list_create();
+  ContextTreeNode *parent = NULL;
+  do {
+    ContextTreeNode *node = ctw_node_create();
+    if (stack->size == 0 && parent == NULL) {
+      tree->root = node;
+    }
+    if (parent != NULL) {
+      parent->zero_child = node;
+    } else if (stack->size != 0) {
+      ContextTreeNode *one_parent = ctw_list_pop(stack);
+      one_parent->one_child = node;
+    }
+    
+    fread(&(node->log_kt), sizeof(double), 1, fp);
+    fread(&(node->log_probability), sizeof(double), 1, fp);
+    fread(&(node->ones_in_history), sizeof(uint32_t), 1, fp);
+    fread(&(node->zeroes_in_history), sizeof(uint32_t), 1, fp);
+    
+    bool zero_child;
+    fread(&zero_child, sizeof(bool), 1, fp);
+    if (zero_child) {
+      parent = node;
+    } else {
+      parent = NULL;
+    }
+
+    bool one_child;
+    fread(&one_child, sizeof(bool), 1, fp);
+    if (one_child) {
+      ctw_list_push(stack, node);
+    }
+    
+    count += 1;
+  } while (stack->size > 0 || parent != NULL);
+  fclose(fp);
+
+  // if (tree->history->size >= tree->depth) {
+  //   printf("Updating context\n");
+  //   ctw_update_context(tree);
+  // }
+  
+  printf("Read %llu nodes to %s\n", count, file_name);
 }

@@ -30,4 +30,5 @@ uint32_t ctw_node_size(ContextTreeNode *);
 
 void ctw_node_update(ContextTreeNode *, bool);
 
+void ctw_node_print(ContextTreeNode *);
 #endif

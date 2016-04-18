@@ -39,4 +39,8 @@ BitVector *ctw_gen_random_symbols(ContextTree *, uint64_t);
 
 void ctw_revert_history(ContextTree *, uint64_t);
 
+void ctw_save(ContextTree *, char *);
+
+void ctw_load(ContextTree *, char *);
+
 #endif
