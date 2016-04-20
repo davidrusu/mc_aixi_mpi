@@ -2,7 +2,7 @@
 // AUTHOR:   Dan Morouney <069001422>
 // FILE:     agent.c
 // CREATED:  2016-04-20 14:42:09
-// MODIFIED: 2016-04-20 15:22:10
+// MODIFIED: 2016-04-20 17:01:41
 ////////////////////////////////////////////////////////////////////
 
 #include "types.h"
@@ -20,11 +20,11 @@ struct Agent {
     void *  ( * model_update_action ) ( const void * self );
     void *  ( * model_update_perception ) ( const void * self );
     void *  ( * search ) ( const void * self );
-    
-    u32     age;
-    u32     last_update;
-    u32     learning_period;
-    u32     total_reward;
+    void *  environment 
+    u32         age;
+    u32         last_update;
+    u32         learning_period;
+    u32         total_reward;
 };
 
 static void * Agent_init ( void * _self, va_list * args );
