@@ -24,11 +24,18 @@ struct Agent
     void *  ( * maximum_reward ) ( void * _self );
     void *  ( * model_size ) ( void * _self );
     void *  ( * model_update_action ) ( void * _self );
-    void *  ( * model_update_perception ) ( void * _self, uint64_t observation, uint64_t reward );
+    void *  ( * model_update_perception ) ( void * _self, u32 observation, u32 reward );
     void *  ( * search ) ( void * _self );
     void *  ( * reset ) ( void * _self );
-    void *  ( * encode_action) ( void * _self, uint64_t action );
-    void *  ( * encode_percept) ( void * _self, uint64_t observation);
+    void *  ( * encode_action) ( void * _self, u32 action );
+    void *  ( * encode_percept) ( void * _self, u32 observation);
+
+    // decoding
+    void *  ( * decode_action) ( void * _self, BitVector* symbols);
+    void *  ( * decode_observation) ( void * _self, BitVector* symbols);
+    void *  ( * decode_reward) ( void * _self, BitVector* symbols);
+    void *  ( * decode_percept) ( void * _self, BitVector* symbols);
+
 
     void *  environment;
     va_list             _options;
@@ -38,6 +45,11 @@ struct Agent
     u32                 learning_period;
     ContextTree*         context_tree;
 };
+
+typedef struct {
+    u32 first;
+    u32 second;
+} u32Tuple;
 
 static void * Agent_init ( void * _self, va_list * args )
 {
@@ -112,15 +124,54 @@ static void * Agent_model_update_action ( void * _self ) {
 
 }
 
-static void * Agent_encode_action(void * _self, uint64_t action) {
+static void * Agent_encode_action(void * _self, u32 action) {
    struct Agent * self = _self;
-   BitVector* vector = util_encode(action);
+   BitVector* vector = bv_from_uint32_t(action)
    ctw_update_history(vector);
    self->age++;
    self->last_update = action_update;
 }
 
-static void * Agent_model_update_perception ( void * _self, uint64_t observation, uint64_t reward ) {
+static void * Agent_decode_action(void * _self, BitVector* symbols) {
+    return bv_peek_uint32(symbols);
+}
+
+static void * Agent_decode_observation(void * _self, BitVector* symbols) {
+    return bv_peek_uint32(symbols);
+}
+
+static void * Agent_decode_reward(void * _self, BitVector* symbols) {
+    return bv_peek_uint32(symbols);
+}
+
+
+static void * Agent_decode_percept(void * _self, BitVector* symbols) {
+  uint64_t i;
+  BitVector* reward_symbols = bv_create();
+  BitVector* observation_symbols = bv_create();
+
+  for (i = 0; i < 64; i++) {
+    bool bit = bv_test(symbols, i);
+    if(i > 31) {
+     bv_push(observation_symbols, bit);
+    }
+    else {
+     bv_push(reward_symbols, bit);
+    }
+  }
+
+  // Decode both
+  u32 reward = Agent_decode_reward(_self, reward_symbols);
+  u32 observation = Agent_decode_observation(_self, observation_symbols);
+
+  u32Tuple* tuple = malloc(sizeof(u32Tuple));
+  tuple->first = observation;
+  tuple->second = reward;
+
+  return tuple;
+}
+
+static void * Agent_model_update_percept ( void * _self, u32 observation, u32 reward ) {
    struct Agent * self = _self;
    BitVector* symbols = self->encode_percept(_self, observation, reward);
 
@@ -134,15 +185,13 @@ static void * Agent_model_update_perception ( void * _self, uint64_t observation
    self->last_update = percept_update;
 }
 
-static void * Agent_encode_percept ( void * _self, uint64_t observation, uint64_t reward) {
+static void * Agent_encode_percept ( void * _self, u32 observation, u32 reward) {
       // maybe I can be private?
-      BitVector* a= bv_from_uint64_t(observation);
-      BitVector* b = bv_from_uint64_t(reward);
+      BitVector* a= bv_from_uint32_t(observation);
+      BitVector* b = bv_from_uint32_t(reward);
       bv_append(a, b);
       return a;
 }
-
-
 
 static void * Agent_search (void * _self )
 {
