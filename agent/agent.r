@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     agent.r
 // CREATED:  2016-04-21 14:39:38
-// MODIFIED: 2016-04-21 14:44:18
+// MODIFIED: 2016-04-21 15:43:21
 ////////////////////////////////////////////////////////////////////
 #ifndef AGENT_R
     #define AGENT_R
@@ -26,7 +26,14 @@
         u32             learning_period;
         ContextTree*    context_tree;
     };
-    
+
+    #define age(a) (((const struct Agent *)(a)) -> age )
+    #define learning_period(a) (((const struct Agent *)(a)) -> learning_period )
+    #define env(a) (((const struct Agent *)(a)) -> environment )
+    #define total_reward(a) (((const struct Agent *)(a)) -> total_reward)
+    #define ctw(a) (((const struct Agent *)(a)) -> context_tree)
+    #define last_update(a) (((const struct Agent *)(a)) -> last_update)
+
     typedef struct {
         u32             first;
         u32             second;
