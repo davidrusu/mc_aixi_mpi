@@ -255,7 +255,7 @@ static void * Environment_perform_action ( void * _self, u32 action )
 static void * Environment_print ( void * _self )
 {
     struct Environment * self = _self;
-    printf("%s",self->__str__());
+    printf("%s",self->__str__(self));
     return;
 }
 
@@ -282,8 +282,8 @@ static const struct Class _Environment = {
     Environment_minimum_action,         // done
     Environment_minimum_observation,    // done
     Environment_minimum_reward,         // done
-    Environment_perform_action,         //
-    Environment_print                   //
+    Environment_perform_action,         // done
+    Environment_print                   // done
 }
 
 const void * Environment = & _Environment
