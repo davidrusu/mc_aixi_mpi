@@ -3,8 +3,11 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 12:03:42
+// MODIFIED: 2016-04-21 14:25:26
 ////////////////////////////////////////////////////////////////////
+
+#include "../_utils/types.h"
+#include "../_utils/macros.h"
 
 typedef enum { Tails , Heads } _action_enum;
 typedef enum { Tails , Heads } _observation_enum;

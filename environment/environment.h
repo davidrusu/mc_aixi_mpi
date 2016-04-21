@@ -3,12 +3,13 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 12:03:42
+// MODIFIED: 2016-04-21 14:24:16
 ////////////////////////////////////////////////////////////////////
 
 #ifndef ENV_H
     #define ENV_H
-    
+    #include "../_utils/types.h"
+
     extern  void * Environment;
 
     // define any functions here

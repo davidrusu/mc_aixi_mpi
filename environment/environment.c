@@ -3,17 +3,17 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 14:06:55
+// MODIFIED: 2016-04-21 14:23:54
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
 #include <stdlib.h>
 
-#include "types.h"
-#include "class.h"
-#include "class.r"
+#include "../_utils/types.h"
+#include "../_utils/macros.h"
+#include "../_object/class.h"
+#include "../_object/class.r"
 #include "environment.h"
-#include "macros.h"
 
 // def __init__():
 static void * Environment_init ( void * _self, va_list * args )
