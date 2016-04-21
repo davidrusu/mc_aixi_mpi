@@ -33,7 +33,7 @@ BitVector *bv_from_uint32(uint32_t v) {
   BitVector *bv = bv_create();
   int64_t j;
   for (j=sizeof(uint32_t) * 8 - 1; j >= 0; j--) {
-    bv_push(bv, (c >> j) % 2 == 1);
+    bv_push(bv, (v >> j) % 2 == 1);
   }
   return bv;
 }
@@ -57,6 +57,13 @@ BitVector *bv_from_float(float f) {
   // interpret the float bits as an int
   uint32_t v = *((uint32_t *) &f);
   return bv_from_uint32(v);
+}
+
+void bv_append(BitVector *a, BitVector *b) {
+  uint64_t i;
+  for (i = 0; i < b->size; i++) {
+    bv_push(a, bv_test(b, i));
+  }
 }
 
 void __bv_check_bounds(BitVector *bv, uint64_t index) {

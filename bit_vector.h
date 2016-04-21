@@ -20,6 +20,8 @@ void bv_free(BitVector *);
 
 BitVector *bv_from_char(char);
 
+void bv_append(BitVector *, BitVector *);
+
 void __bv_check_bounds(BitVector *, uint64_t);
 
 void __bv_grow(BitVector *);
