@@ -9,6 +9,8 @@
 #include "class.r"
 #include "new.h"
 #include <stddef.h>
+#include "../predict/context_tree.h"
+#include "../util.h"
 
 typedef enum { action_update, percept_update } update_enum;
 
@@ -24,13 +26,15 @@ struct Agent
     void *  ( * model_update_perception ) ( void * _self );
     void *  ( * search ) ( void * _self );
     void *  ( * reset ) ( void * _self );
+    void *  ( * encode_action) ( void * _self, uint64_t action );
+
     void *  environment;
     va_list             _options;
     double              total_reward;
     update_enum         last_update;
     u32                 age;
     u32                 learning_period;
-
+    ContextTree*         context_tree;
 };
 
 static void * Agent_init ( void * _self, va_list * args )
@@ -42,6 +46,10 @@ static void * Agent_init ( void * _self, va_list * args )
     self -> last_update = action_update;
     self -> _options = * args;
     self -> total_reward = 0.0;
+
+    // TODO: Fill me in with a real value
+    self->context_tree = ctw_create(5);
+
     return;
 }
 
@@ -89,10 +97,31 @@ static void * Agent_maximum_reward ( void * _self )
     return self -> environment -> maximum_reward ( self -> environment );
 }
 
-// no overriding in C so these method is left off and can put in later
-//static void * Agent_model_size ( void * _self );
-//static void * Agent_model_update_action ( void * _self );
-//static void * Agent_model_update_perception ( void * _self );
+// pyaixi: model_size
+static void * Agent_model_size ( void * _self ) {
+   struct Agent * self = _self;
+   return ctw_size(self->context_tree)
+}
+
+static void * Agent_model_update_action ( void * _self ) {
+   struct Agent * self = _self;
+    action_symbols =
+
+
+}
+
+static void * Agent_encode_action(void * _self, uint64_t action) {
+   struct Agent * self = _self;
+   BitVector* vector = util_encode(action);
+   ctw_update_history(vector);
+   self->age++;
+   self->last_update = action_update;
+}
+
+static void * Agent_model_update_perception ( void * _self ) {
+
+}
+
 
 static void * Agent_search (void * _self )
 {
