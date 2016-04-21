@@ -59,6 +59,30 @@ BitVector *bv_from_float(float f) {
   return bv_from_uint32(v);
 }
 
+uint32_t bv_peek_uint32(BitVector *bv) {
+  uint32_t result = 0;
+  int64_t i;
+  for (i = sizeof(uint32_t) * 8; i > 0; i--) {
+    result = result << 1;
+    if (bv_test(bv, bv->size - i)) {
+      result += 1;
+    }
+  }
+  return result;
+}
+
+uint64_t bv_peek_uint64(BitVector *bv) {
+  uint64_t result = 0;
+  int64_t i;
+  for (i = sizeof(uint64_t) * 8; i > 0; i--) {
+    result = result << 1;
+    if (bv_test(bv, bv->size - i)) {
+      result += 1;
+    }
+  }
+  return result;
+}
+
 void bv_append(BitVector *a, BitVector *b) {
   uint64_t i;
   for (i = 0; i < b->size; i++) {
