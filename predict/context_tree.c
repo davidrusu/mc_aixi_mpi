@@ -113,6 +113,10 @@ void ctw_update_vector(ContextTree *tree, BitVector *symbols) {
   }
 }
 
+void ctw_update_history(ContextTree *tree, BitVector *symbols) {
+  bv_append(tree->history, symbols);
+}
+
 double ctw_predict_symbol(ContextTree *tree, bool symbol) {
   if (tree->history->size + 1 <= tree->depth) {
     return 0.5;
@@ -174,8 +178,6 @@ void ctw_revert_history(ContextTree *tree, uint64_t n) {
 
 void ctw_save(ContextTree *tree, char *file_name) {
   uint64_t count = 0;
-  bool child_exists = true;
-  bool child_not_exists = false;
   
   FILE *fp = fopen(file_name, "w");
   fwrite(&(tree->depth), sizeof(uint32_t), 1, fp);
@@ -260,11 +262,6 @@ void ctw_load(ContextTree *tree, char *file_name) {
     count += 1;
   } while (stack->size > 0 || parent != NULL);
   fclose(fp);
-
-  // if (tree->history->size >= tree->depth) {
-  //   printf("Updating context\n");
-  //   ctw_update_context(tree);
-  // }
   
   printf("Read %llu nodes to %s\n", count, file_name);
 }

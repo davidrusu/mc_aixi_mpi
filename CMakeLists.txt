@@ -7,8 +7,8 @@ set(SOURCE_FILES
     agent/agent.c
     environment/environment.c
     predict/context_tree.c
-    predict/context_tree_node.c
-    predict/predict.c
+    predict/context_tree_node.
+
     search/search.c
     summary.c
     utils.c search/dict.c search/monte_node.c main.c)
