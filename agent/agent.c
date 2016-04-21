@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include "../predict/context_tree.h"
 #include "../util.h"
+#include "../bit_vector.h"
 
 typedef enum { action_update, percept_update } update_enum;
 
@@ -23,10 +24,11 @@ struct Agent
     void *  ( * maximum_reward ) ( void * _self );
     void *  ( * model_size ) ( void * _self );
     void *  ( * model_update_action ) ( void * _self );
-    void *  ( * model_update_perception ) ( void * _self );
+    void *  ( * model_update_perception ) ( void * _self, uint64_t observation, uint64_t reward );
     void *  ( * search ) ( void * _self );
     void *  ( * reset ) ( void * _self );
     void *  ( * encode_action) ( void * _self, uint64_t action );
+    void *  ( * encode_percept) ( void * _self, uint64_t observation);
 
     void *  environment;
     va_list             _options;
@@ -118,9 +120,28 @@ static void * Agent_encode_action(void * _self, uint64_t action) {
    self->last_update = action_update;
 }
 
-static void * Agent_model_update_perception ( void * _self ) {
+static void * Agent_model_update_perception ( void * _self, uint64_t observation, uint64_t reward ) {
+   struct Agent * self = _self;
+   BitVector* symbols = self->encode_percept(_self, observation, reward);
 
+   // Are we still learning?
+   if((self->learning_period > 0 ) && (self->age > self->learning_period)) {
+    ctw_update_history(self->context_tree, symbols);
+   } else {
+    ctw_update_vector(self->context_tree, symbols)
+   }
+   self->total_reward += reward;
+   self->last_update = percept_update;
 }
+
+static void * Agent_encode_percept ( void * _self, uint64_t observation, uint64_t reward) {
+      // maybe I can be private?
+      BitVector* a= bv_from_uint64_t(observation);
+      BitVector* b = bv_from_uint64_t(reward);
+      bv_append(a, b);
+      return a;
+}
+
 
 
 static void * Agent_search (void * _self )
