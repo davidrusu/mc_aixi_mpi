@@ -1,7 +1,10 @@
-// MACROS
-// Written by Robert Morouney
-// April 2016
-// robert@morouney.com
+////////////////////////////////////////////////////////////////////
+// AUTHOR:   Robert Morouney <069001422>
+// EMAIL:    robert@morouney.com
+// FILE:     macros.h
+// CREATED:  2016-04-21 12:03:42
+// MODIFIED: 2016-04-21 12:03:42
+////////////////////////////////////////////////////////////////////
 
 #ifndef MACRO_H
     #define MACRO_H
