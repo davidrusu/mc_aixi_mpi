@@ -18,9 +18,6 @@
 
 #define ARC4RANDOM_MAX      0x100000000
 
-#define NODE_TYPE_CHANCE 0
-#define NODE_TYPE_DECISION 1
-
 #define MONTE_UNEXPLORED_BIAS 1000000000.0f
 
 // pyaixi: __init__

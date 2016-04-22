@@ -17,6 +17,7 @@
 #include "../environment/environment.r"
 #include "../environment/environment.h"
 #include "agent.h"
+#include "../search/monte_node.h"
 
 static void * Agent_init ( Agent* self, va_list * args )
 {
@@ -226,7 +227,37 @@ static double Agent_playout(Agent* self, u32 horizon) {
 
 static u32 Agent_search (Agent* self)
 {
-    return Agent_maximum_action(self);
+    // This function was not implemented properly
+    AgentUndo* undo = Agent_clone_into_temp(self);
+
+    MonteNode* node = monte_create_tree(NODE_TYPE_DECISION);
+    u32 i = 0;
+    // 300 sims
+    for(i = 0; i < 300;i++ ) {
+        monte_sample(node, self, self->horizon);
+        Agent_model_revert(self, undo);
+    }
+
+    u32 best_action = Agent_generate_random_action(self);
+    double best_mean = -1;
+
+    for(i = 0; i <; self->environment->num_actions; i++) {
+        u32 action =  self->environment->_valid_actions[i];
+
+        MonteNode* searchNode = dict_find(node->actions, action);
+
+        if(searchNode != NULL) {
+
+            double mean = searchNode->mean + ((float)rand()/(float)(RAND_MAX/1) );
+
+            if(mean > best_mean) {
+                best_mean = mean;
+                best_action = action;
+            }
+        }
+    }
+
+    return best_action;
 }
 
 static void Agent_reset ( Agent* self )
