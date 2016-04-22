@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 14:24:16
+// MODIFIED: 2016-04-22 00:04:48
 ////////////////////////////////////////////////////////////////////
 
 #ifndef ENV_H
@@ -29,8 +29,5 @@
     u32  minimum_action       ( void * _self );
     u32  minimum_observation  ( void * _self );
     u32  minimum_reward       ( void * _self );
-
-    void perform_action       ( void * _self, u32    action );
-    void print                ( void * _self );
 
 #endif

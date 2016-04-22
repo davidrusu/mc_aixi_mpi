@@ -3,14 +3,14 @@
 // EMAIL:    robert@morouney.com
 // FILE:     class.r
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 12:03:42
+// MODIFIED: 2016-04-21 23:54:25
 ////////////////////////////////////////////////////////////////////
 
 #ifndef CLASS_R
 #define CLASS_R
 
 #include <stdarg.h>
-#include "types.h"
+#include "../_utils/types.h"
 
 struct Class {
     size_t  size;

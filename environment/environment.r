@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment.r
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 15:37:52
+// MODIFIED: 2016-04-22 00:13:27
 ////////////////////////////////////////////////////////////////////
 
 #ifndef ENV_R
@@ -25,7 +25,7 @@
     } Environment; //---------------------------------------------------
     
     #define action(e) (((const struct Environment *)(e)) -> _action)
-    #define is_finished(e) (((const struct Environment *)(e)) -> _is_finished)
+    #define is_finished(e) ((const struct Environment *)(e)) -> _is_finished
     #define observation(e) (((const struct Environment *)(e)) -> _observation)
     #define reward(e) (((const struct Environment *)(e)) -> _reward)
     #define valid_actions(e) (((const struct Environment *)(e)) -> _valid_actions)

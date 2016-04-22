@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     types.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 12:03:42
+// MODIFIED: 2016-04-22 02:19:48
 ////////////////////////////////////////////////////////////////////
 
 #ifndef INTDEF
@@ -26,7 +26,26 @@
     typedef int8_t              s08;
 #endif
 
-#ifndef BOOLDEF
-    #define BOOLDEF
-    typedef bool *             b_lst;
+#ifndef U_ENUM
+#define U_ENUM
+    typedef enum { action_update, percept_update } update_enum;
 #endif
+
+#ifndef TUPLE_32
+#define TUPLE_32
+    typedef struct {
+        u32             first;
+        u32             second;
+    } u32Tuple;
+#endif
+
+#ifndef UNDO
+#define UNDO
+    typedef struct {
+        u32             age;
+        u32             total_reward;
+        u32             history_size;
+        update_enum     last_update;
+    } AgentUndo;
+#endif
+

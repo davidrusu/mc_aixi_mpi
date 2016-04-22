@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 21:40:13
+// MODIFIED: 2016-04-22 00:14:17
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -18,12 +18,12 @@
 // def __init__():
 static void * Environment_init ( void * _self, va_list * args )
 {
-    struct Environment * self = _self;
-    self->_options      = args;
+    struct Environment * self = ( struct Environment * ) _self;
 
-    self->is_finished   = 0x00;
-    self->reward        = 0x00;
-    self->_action       = 0x00;
+    self -> _options    = *args;
+    is_finished(self)   = 0x00;
+    reward(self)        = 0x00;
+    action(self)        = 0x00;
 
     /// TODO: _valid_actions and _valid_observations and _observation need
     // to be initialized.  Must discuss types with the group first.
@@ -236,16 +236,3 @@ u32  minimum_reward       ( void * _self )
     return self->_valid_rewards[0];
     
 }//-------------------------------------------------------------------
-
-// Perform an action on the environment
-void perform_action       ( void * _self, u32    action )
-{
-    struct Environment * self = _self;
-    //NO OP.  This will be overwritten by the inheriting class.
-    
-}//-------------------------------------------------------------------
-
-
-
-
-

@@ -11,6 +11,8 @@
 #include <assert.h>
 #include "../_utils/types.h"
 #include "../_utils/macros.h"
+#include "../_object/class.h"
+#incldue "environment.h"
 #include "coin_flip.h"
 
 void * CF_init ( void * _self, va_list * args ) 
