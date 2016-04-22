@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment.r
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 14:24:34
+// MODIFIED: 2016-04-21 15:37:52
 ////////////////////////////////////////////////////////////////////
 
 #ifndef ENV_R
@@ -24,8 +24,12 @@
         u32      *_valid_rewards;
     } Environment; //---------------------------------------------------
     
-    #define action(e) (((const struct Environment *)(p)) -> _action)
-    #define is_finished(e) (((const struct Environment *)(p)) -> _is_finished)
-    #define observation(e) (((const struct Environment *)(p)) -> _observation)
-    #define reward(e) (((const struct Environment *)(p)) -> _reward)
+    #define action(e) (((const struct Environment *)(e)) -> _action)
+    #define is_finished(e) (((const struct Environment *)(e)) -> _is_finished)
+    #define observation(e) (((const struct Environment *)(e)) -> _observation)
+    #define reward(e) (((const struct Environment *)(e)) -> _reward)
+    #define valid_actions(e) (((const struct Environment *)(e)) -> _valid_actions)
+    #define valid_observations(e) (((const struct Environment *)(e)) -> _valid_observations)
+    #define valid_rewards(e) (((const struct Environment *)(e)) -> _valid_rewards)
+    
 #endif

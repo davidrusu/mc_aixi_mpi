@@ -9,6 +9,10 @@
 #ifndef MACRO_H
     #define MACRO_H
 
+    #define BLOCK_START {
+
+    #define BLOCK_END   }
+
     #define FALSE (0)
 
     #define TRUE (!FALSE)
@@ -80,10 +84,9 @@
     // % Call function and exit if error occured
     #define CALL_AND_EXIT_ON_ERR(function) CALL_AND_CHECK(function, 0)
 
-    #define LOG2(x) do { register u32 r, t, tt
 
     #define LT(n) n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n
-    static const char LogTable256[256] =
+    const char LogTable256[256] =
     {
     
         -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
