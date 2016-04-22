@@ -5,6 +5,7 @@
 #define NODE_TYPE_DECISION 1
 
 #include "dict.h"
+#include "../agent/agent.h"
 #include "../_utils/types.h"
 
 // pyaixi: class members
@@ -19,8 +20,8 @@ typedef struct MonteNode {
 } MonteNode;
 
 MonteNode* monte_create_tree(u32 nodeType);
-u32 _monte_select_action(MonteNode* tree, struct Agent* agent);
-float monte_sample(MonteNode* tree, struct Agent* agent, u32 horizon);
+u32 _monte_select_action(MonteNode* tree, Agent* agent);
+float monte_sample(MonteNode* tree, Agent* agent, u32 horizon);
 
 
 #endif

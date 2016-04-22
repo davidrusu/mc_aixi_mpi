@@ -1,5 +1,8 @@
 #ifndef AGENT_H
     #define AGENT_H
+    #include "../_utils/types.h"
+    #include "../bit_vector.h"
+    #include "../predict/context_tree.h"
 
     typedef struct Agent
     {

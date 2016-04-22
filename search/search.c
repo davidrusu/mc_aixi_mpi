@@ -39,7 +39,7 @@ MonteNode* monte_create_tree(u32 nodeType) {
     return root;
 }
 
-u32 _monte_select_action(MonteNode* tree, struct Agent* agent) {
+u32 _monte_select_action(MonteNode* tree, Agent* agent) {
     // returns -1 if no vaild action
 
     float agent_horizon = agent->horizon;
@@ -80,7 +80,7 @@ u32 _monte_select_action(MonteNode* tree, struct Agent* agent) {
 
 // pyaixi: sample(agent, horizon)
 // notes: we require some more work here
-float monte_sample(MonteNode* tree, struct Agent* agent, u32 horizon) {
+float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
     double reward = 0.0;
 
     if(horizon == 0) {

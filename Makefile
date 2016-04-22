@@ -7,12 +7,12 @@
 #//////////////////////////////////////////////////////////////////
 
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -lm -g -Wall
 OUT_NAME = main_aixi
 default: main_aixi
 
 main_aixi: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o
-	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_iterator.o ctw_list.o dict.o search.o bit_vector.o
+	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o
 
 coin_flip.o: environment/coin_flip.c environment/coin_flip.h environment/coin_flip.r environment/environment.h environment/environment.r environment/class.h environment/class.r _utils/macros.h _utils/types.h
 	$(CC) $(CFLAGS) -c environment/coin_flip.c
