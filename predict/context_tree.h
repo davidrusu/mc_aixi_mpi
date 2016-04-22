@@ -29,6 +29,8 @@ void ctw_update_symbol(ContextTree *, bool);
 
 void ctw_update_vector(ContextTree *, BitVector *);
 
+void ctw_update_history(ContextTree *, BitVector *);
+
 double ctw_predict_symbol(ContextTree *, bool);
 
 double ctw_predict_vector(ContextTree *, BitVector *);

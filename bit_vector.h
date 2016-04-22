@@ -20,6 +20,10 @@ void bv_free(BitVector *);
 
 BitVector *bv_from_char(char);
 
+BitVector *bv_from_uint32(uint32_t);
+
+BitVector *bv_from_uint64(uint64_t);
+
 void bv_append(BitVector *, BitVector *);
 
 uint32_t bv_peek_uint32(BitVector *);
