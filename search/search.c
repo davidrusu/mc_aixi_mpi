@@ -4,6 +4,9 @@
     To get parallelism,  you should refer to search_parallel.c and use those helper functions to run several instances
     of this at once.
 */
+#ifndef _SEARCH_C
+#define _SEARCH_C
+
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -36,7 +39,7 @@ MonteNode* monte_create_tree(u32 nodeType) {
     return root;
 }
 
-int _monte_select_action(MonteNode* tree, struct Agent* agent) {
+u32 _monte_select_action(MonteNode* tree, struct Agent* agent) {
     // returns -1 if no vaild action
 
     float agent_horizon = agent->horizon;
@@ -136,3 +139,5 @@ float monte_sample(MonteNode* tree, struct Agent* agent, u32 horizon) {
 
     return reward;
 }
+
+#endif

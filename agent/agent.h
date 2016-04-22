@@ -13,43 +13,43 @@
         ContextTree*         context_tree;
     } Agent;
 
-    static void * Agent_init ( Agent* self, va_list * args );
-    static AgentUndo* Agent_clone_into_temp                   (Agent* self);
+    void * Agent_init ( Agent* self, va_list * args );
+    AgentUndo* Agent_clone_into_temp                   (Agent* self);
 
-    static double  Agent_average_reward                       ( Agent* self);
+    double  Agent_average_reward                       ( Agent* self);
 
-    static u32  Agent_generate_random_action                  ( Agent* self);
-    static u32  Agent_maximum_action                          ( Agent* self  );
-    static u32  Agent_maximum_reward                          ( Agent* self  );
-    static u32  Agent_model_size                              ( Agent* self  );
+    u32  Agent_generate_random_action                  ( Agent* self);
+    u32  Agent_maximum_action                          ( Agent* self  );
+    u32  Agent_maximum_reward                          ( Agent* self  );
+    u32  Agent_model_size                              ( Agent* self  );
 
-    static void  Agent_model_update_action                    ( Agent* self, u32 action );
-    static BitVector * Agent_encode_action                    ( Agent* self , u32 action );
+    void  Agent_model_update_action                    ( Agent* self, u32 action );
+    BitVector * Agent_encode_action                    ( Agent* self , u32 action );
 
     // decoding
-    static u32 Agent_decode_action                            (Agent* self , BitVector* symbols);
-    static u32 Agent_decode_observation                       (Agent* self , BitVector* symbols);
-    static u32 Agent_decode_reward                            (Agent* self, BitVector* symbols);
-    static u32Tuple* Agent_decode_percept                     (Agent* self , BitVector* symbols);
+    u32 Agent_decode_action                            (Agent* self , BitVector* symbols);
+    u32 Agent_decode_observation                       (Agent* self , BitVector* symbols);
+    u32 Agent_decode_reward                            (Agent* self, BitVector* symbols);
+    u32Tuple* Agent_decode_percept                     (Agent* self , BitVector* symbols);
 
     // generators
-    static u32 Agent_generate_action                          (Agent* self);
-    static u32 Agent_generate_percept                         (Agent* self );
+    u32 Agent_generate_action                          (Agent* self);
+    u32 Agent_generate_percept                         (Agent* self );
     u32Tuple * Agent_generate_percept_and_update              (Agent* self );
 
-    static u32 Agent_history_size                             (Agent* self );
-    static BitVector * Agent_get_predicted_action_probability (Agent* self , u32 action);
-    static u32 Agent_maximum_bits_needed                      (Agent* self );
+    u32 Agent_history_size                             (Agent* self );
+    double Agent_get_predicted_action_probability (Agent* self , u32 action);
+    u32 Agent_maximum_bits_needed                      (Agent* self );
 
-    static void Agent_model_revert                            (Agent* self , AgentUndo* undo);
-    static void Agent_model_update_percept                    ( Agent* self , u32 observation, u32 reward );
+    void Agent_model_revert                            (Agent* self , AgentUndo* undo);
+    void Agent_model_update_percept                    ( Agent* self , u32 observation, u32 reward );
 
 
-    static BitVector * Agent_encode_percept                   ( Agent* self, u32 observation, u32 reward);
+    BitVector * Agent_encode_percept                   ( Agent* self, u32 observation, u32 reward);
 
-    static double Agent_percept_probability                   (Agent* self, u32 observation, u32 reward);
-    static double Agent_playout                             (Agent* self, u32 horizon);
+    double Agent_percept_probability                   (Agent* self, u32 observation, u32 reward);
+    double Agent_playout                             (Agent* self, u32 horizon);
 
-    static u32 Agent_search                                 ( Agent* self);
-    static void  Agent_reset                                  ( Agent* self );
+    u32 Agent_search                                 ( Agent* self);
+    void  Agent_reset                                  ( Agent* self );
 #endif

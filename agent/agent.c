@@ -9,8 +9,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "../_utils/types.h"
-#include "../_utils/macros.h"
-#include "../_object/class.r"
 #include "../_object/class.h"
 #include "../predict/context_tree.h"
 #include "../bit_vector.h"
@@ -19,7 +17,7 @@
 #include "agent.h"
 #include "../search/monte_node.h"
 
-static void * Agent_init ( Agent* self, va_list * args )
+  void * Agent_init ( Agent* self, va_list * args )
 {
     self -> environment = cpy(va_arg(* args , struct Environment *));
     self -> age = 0;
@@ -35,25 +33,26 @@ static void * Agent_init ( Agent* self, va_list * args )
     return self;
 }
 
-static void * Agent_delete ( void * _self )
+  void * Agent_delete ( void * _self )
 {
     // free any memory that might be allocated by the class
     return NULL;
 }
 
-static u32 Agent_history_size(Agent* self) {
+  u32 Agent_history_size(Agent* self) {
     return self->context_tree->history->size;
 }
 
-static AgentUndo* Agent_clone_into_temp(Agent* self) {
-  AgentUndo* undo = (AgentUndo *) malloc(sizeof(AgentUndo));
+  AgentUndo* Agent_clone_into_temp(Agent* self) {
+    AgentUndo* undo = (AgentUndo *) malloc(sizeof(AgentUndo));
     undo->age = self->age;
     undo->total_reward = self->total_reward;
     undo->history_size = Agent_history_size(self);
     undo->last_update = self->last_update;
+    return undo;
 }
 
-static BitVector * Agent_encode_action(Agent* self, u32 action) {
+  BitVector * Agent_encode_action(Agent* self, u32 action) {
    BitVector* vector = bv_from_uint32(action);
    ctw_update_history(self->context_tree, vector);
    self->age++;
@@ -61,19 +60,19 @@ static BitVector * Agent_encode_action(Agent* self, u32 action) {
    return vector;
 }
 
-static u32 Agent_decode_action(Agent* self, BitVector* symbols) {
+  u32 Agent_decode_action(Agent* self, BitVector* symbols) {
     return bv_peek_uint32(symbols);
 }
 
-static u32 Agent_decode_observation(Agent* self, BitVector* symbols) {
+  u32 Agent_decode_observation(Agent* self, BitVector* symbols) {
     return bv_peek_uint32(symbols);
 }
 
-static u32 Agent_decode_reward(Agent * self, BitVector* symbols) {
+  u32 Agent_decode_reward(Agent * self, BitVector* symbols) {
     return bv_peek_uint32(symbols);
 }
 
-static double Agent_average_reward ( Agent * self)
+  double Agent_average_reward ( Agent * self)
 {
     double average = 0.0;
     if ( self -> age > 0 )
@@ -81,38 +80,38 @@ static double Agent_average_reward ( Agent * self)
     return average;
 }
 
-static u32 Agent_generate_random_action ( Agent * self)
+  u32 Agent_generate_random_action ( Agent * self)
 {
     // TODO: Replace this with the NUMBER of valid actions
     int actionIndex = rand() % self->environment->num_actions;
     return self->environment->_valid_actions[actionIndex];
 }
 
-static u32 Agent_maximum_action ( Agent* self)
+  u32 Agent_maximum_action ( Agent* self)
 {
     // TODO: wtf???
     return maximum_reward(self->environment);
 }
 
-static u32 Agent_maximum_reward ( Agent* self)
+  u32 Agent_maximum_reward ( Agent* self)
 {
     // TODO: wtff???
     return maximum_reward(self->environment);
 }
 
 // pyaixi: model_size
-static u32 Agent_model_size ( Agent* self) {
+  u32 Agent_model_size ( Agent* self) {
    return ctw_size(self->context_tree);
 }
 
-static void Agent_model_update_action ( Agent* self, u32 action) {
+  void Agent_model_update_action ( Agent* self, u32 action) {
    BitVector* action_symbols = Agent_encode_action(self, action);
    ctw_update_history(self->context_tree, action_symbols);
    self->age++;
    self->last_update = action_update;
 }
 
-static u32Tuple* Agent_decode_percept(Agent* self, BitVector* symbols) {
+  u32Tuple* Agent_decode_percept(Agent* self, BitVector* symbols) {
   uint64_t i;
   BitVector* reward_symbols = bv_create();
   BitVector* observation_symbols = bv_create();
@@ -138,12 +137,12 @@ static u32Tuple* Agent_decode_percept(Agent* self, BitVector* symbols) {
   return tuple;
 }
 
-static u32 Agent_generate_action(Agent* self) {
+  u32 Agent_generate_action(Agent* self) {
    BitVector* random = ctw_gen_random_symbols(self->context_tree, 32);
    return Agent_decode_action(self, random);
 }
 
-static u32 Agent_generate_percept(Agent* self) {
+  u32 Agent_generate_percept(Agent* self) {
    // RIP: method not used, but I've left it here as a marker
 }
 
@@ -157,16 +156,16 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
    return tuple;
 }
 
-static double Agent_get_predicted_action_probability(Agent* self, u32 action) {
+  double Agent_get_predicted_action_probability(Agent* self, u32 action) {
     BitVector* symbols =  Agent_encode_action(self, action);
     return ctw_predict_vector(self->context_tree, symbols);
 }
 
-static u32 Agent_maximum_bits_needed(Agent * self) {
+  u32 Agent_maximum_bits_needed(Agent * self) {
     return 32; // this is stupid
 }
 
-static void Agent_model_revert(Agent * self, AgentUndo* undo) {
+  void Agent_model_revert(Agent * self, AgentUndo* undo) {
     while(Agent_history_size(self) > undo->history_size)  {
         if(self->last_update == percept_update){
             ctw_revert(self->context_tree, 32);
@@ -183,14 +182,14 @@ static void Agent_model_revert(Agent * self, AgentUndo* undo) {
     return;
 }
 
-static BitVector * Agent_encode_percept ( Agent * self, u32 observation, u32 reward) {
+  BitVector * Agent_encode_percept ( Agent * self, u32 observation, u32 reward) {
     BitVector* a = bv_from_uint32(observation);
     BitVector* b = bv_from_uint32(reward);
     bv_append(a, b);
     return a;
 }
 
-static void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
+  void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
 
     // Are we still learning?
@@ -205,12 +204,12 @@ static void Agent_model_update_percept ( Agent * self, u32 observation, u32 rewa
     return;
 }
 
-static double Agent_percept_probability(Agent* self, u32 observation, u32 reward) {
+  double Agent_percept_probability(Agent* self, u32 observation, u32 reward) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
     return ctw_predict_vector(self->context_tree, symbols);
 }
 
-static double Agent_playout(Agent* self, u32 horizon) {
+  double Agent_playout(Agent* self, u32 horizon) {
     double total_reward = 0;
     u32 i = 0;
 
@@ -225,7 +224,7 @@ static double Agent_playout(Agent* self, u32 horizon) {
     return total_reward;
 }
 
-static u32 Agent_search (Agent* self)
+  u32 Agent_search (Agent* self)
 {
     // This function was not implemented properly
     AgentUndo* undo = Agent_clone_into_temp(self);
@@ -241,7 +240,7 @@ static u32 Agent_search (Agent* self)
     u32 best_action = Agent_generate_random_action(self);
     double best_mean = -1;
 
-    for(i = 0; i <; self->environment->num_actions; i++) {
+    for(i = 0; i < self->environment->num_actions; i++) {
         u32 action =  self->environment->_valid_actions[i];
 
         MonteNode* searchNode = dict_find(node->actions, action);
@@ -260,7 +259,7 @@ static u32 Agent_search (Agent* self)
     return best_action;
 }
 
-static void Agent_reset ( Agent* self )
+  void Agent_reset ( Agent* self )
 {
     ctw_clear(self->context_tree);
 
