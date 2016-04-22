@@ -9,16 +9,19 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
-#include "dict.c"
+#include "dict.h"
+#include "monte_node.h"
+// #inclued "../bit_vector.h"
+#include "../agent/agent.r"
 
 // TODO: Verify if these actually matter or not
-#define NODE_TYPE_CHANCE = 0
-#define NODE_TYPE_DECISION = 1
+#define NODE_TYPE_CHANCE 0
+#define NODE_TYPE_DECISION 1
 
 // Constants used for the class attributes
 // pyaixi: these are class attributes
-#define MONTE_EXPLORATION_CONSTANT = 2.0
-#define MONTE_UNEXPLORED_BIAS = 1000000000.0
+#define MONTE_EXPLORATION_CONSTANT 2.0
+#define MONTE_UNEXPLORED_BIAS 1000000000.0
 
 // pyaixi: __init__
 // notes: the node type should match from the above above node type constants.
@@ -38,10 +41,39 @@ MonteNode* monte_create_tree(int nodetype) {
     return root;
 }
 
+int _monte_select_action(MonteNode* tree, struct Agent* agent) {
+    // returns -1 if no vaild action
+  
+    // todo: populate these with agent.horizon
+    // and agent.maximum_reward
+    float agent_horizon = 0;
+    float agent_max_reward = 0;
+
+    float explore_bias = agent_horizon * agent_max_reward;
+    // 2.0f is hard-coded into the application
+    float exploration_numerator = (float) (2.0f* log((double) tree->visits));
+
+    printf("%f", exploration_numerator);
+
+    // desu???
+    int best_action = 0;
+
+    // TODO: ??? profit
+    // todo: implement the loop from lines #182
+    // to lines 202; it's straight forward but
+
+    // for each valid action...
+        // do the update and selection procedure randomly
+    // end for
+
+    return best_action;
+}
+
+
 // pyaixi: sample(agent, horizon)
 // notes: we require some more work here
 // todo: resolve the agent pointer to some structure
-float monte_sample(MonteNode* tree, agent* agent, int horizon) {
+float monte_sample(MonteNode* tree, struct Agent* agent, int horizon) {
     float reward = 0.0;
 
     if(horizon == 0) {
@@ -87,12 +119,12 @@ float monte_sample(MonteNode* tree, agent* agent, int horizon) {
         int action = _monte_select_action(tree, agent);
         // TODO: implement line #143 - agent.model_update_action(action)
 
-        MonteNode* actionNode = dict_find(tree->actions, action);
-        if(action == NULL) {
-            MonteNode* newChild = monte_create_tree(NODE_TYPE_CHANCE);
+        MonteNode* child = dict_find(tree->actions, action);
+        if(child == NULL) {
+            child = monte_create_tree(NODE_TYPE_CHANCE);
+	    dict_add(tree->actions, action, child);
         }
 
-        MonteNode* child = dict_find(tree->actions, action);
         if(child == NULL) {
             printf("wtf??? child was not found.. abort!\n");
             exit(1338);
@@ -108,31 +140,4 @@ float monte_sample(MonteNode* tree, agent* agent, int horizon) {
     tree->visits = tree->visits + 1;
 
     return reward;
-}
-
-int _monte_select_action(MonteNode* tree, agent* agent) {
-
-    // todo: populate these with agent.horizon
-    // and agent.maximum_reward
-    float agent_horizon = 0;
-    float agent_max_reward = 0;
-
-    float explore_bias = agent_horizon * agent_max_reward;
-    // 2.0f is hard-coded into the application
-    float exploration_numerator = (float) (2.0f* log((double) tree->visits));
-
-    printf("%f", exploration_numerator);
-
-    // desu???
-    int best_action = 0;
-
-    // TODO: ??? profit
-    // todo: implement the loop from lines #182
-    // to lines 202; it's straight forward but
-
-    // for each valid action...
-        // do the update and selection procedure randomly
-    // end for
-
-    return best_action;
 }
