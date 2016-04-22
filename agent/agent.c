@@ -144,6 +144,7 @@
 
   u32 Agent_generate_percept(Agent* self) {
    // RIP: method not used, but I've left it here as a marker
+      return 0;
 }
 
 u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
