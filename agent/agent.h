@@ -13,7 +13,7 @@
         ContextTree*         context_tree;
     } Agent;
 
-
+    static void * Agent_init ( Agent* self, va_list * args );
     static AgentUndo* Agent_clone_into_temp                   (Agent* self);
 
     static double  Agent_average_reward                       ( Agent* self);

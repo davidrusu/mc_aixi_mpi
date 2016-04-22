@@ -4,6 +4,10 @@
 #include <time.h>
 #include "environment/environment.r"
 #include "environment/environment.h"
+#include "environment/class.r"
+#include "environment/class.h"
+#include "environment/coin_flip.r"
+#include "environment/coin_flip.h"
 #include "agent/agent.h"
 
 /*
@@ -132,10 +136,11 @@ int main() {
     printf("Booting MC AIXI kernel...\n");
 
     // TODO: Create an environment...
-    struct Coin_Flip* environment = new ( struct Coin_Flip, 0.7 );
+    struct Coin_Flip* environment = new (Coin_Flip, 0.7f);
 
     // TODO: Create the agent
-    Agent* agent = create_agent(environment, appOptions ->ct_depth, appOptions ->mc_simulations);
+    Agent* agent = malloc(sizeof(Agent));
+    agent = Agent_init(agent, environment, appOptions->learning_period)
 
     // TODO: Line #443: Do we need to copy some of the options into here?
     // options->actions_bits = environment->action_bits()... for example
