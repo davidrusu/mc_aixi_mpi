@@ -1,25 +1,52 @@
-main.o: main.c /usr/include/stdc-predef.h /usr/include/stdlib.h \
- /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
- /usr/include/gnu/stubs-64.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/5.3.0/include/stddef.h \
- /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/bits/byteswap.h /usr/include/bits/types.h \
- /usr/include/bits/typesizes.h /usr/include/bits/byteswap-16.h \
- /usr/include/sys/types.h /usr/include/time.h /usr/include/sys/select.h \
- /usr/include/bits/select.h /usr/include/bits/sigset.h \
- /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
- /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
- /usr/include/bits/stdlib-float.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/5.3.0/include/stdbool.h \
- /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/wchar.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/5.3.0/include/stdarg.h \
- /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/xlocale.h environment/environment.r \
- environment/../_utils/types.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/5.3.0/include/stdint.h \
- /usr/include/stdint.h /usr/include/bits/wchar.h \
- environment/environment.h environment/class.r environment/class.h \
- environment/coin_flip.r environment/coin_flip.h agent/agent.h
+#//////////////////////////////////////////////////////////////////
+# AUTHOR:   Robert Morouney <069001422>
+# EMAIL:    robert@morouney.com 
+# FILE:     Makefile_2
+# CREATED:  2016-04-22 18:13:19
+# MODIFIED: 2016-04-22 19:04:56
+#//////////////////////////////////////////////////////////////////
+
+CC = gcc
+CFLAGS = -g -Wall
+OUT_NAME = main_aixi
+default: main_aixi
+
+main_aixi: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_iterator.o ctw_list.o dict.o search.o bit_vector.o
+	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_iterator.o ctw_list.o dict.o search.o bit_vector.o
+
+coin_flip.o: environment/coin_flip.c environment/coin_flip.h environment/coin_flip.r environment/environment.h environment/environment.r environment/class.h environment/class.r _utils/macros.h _utils/types.h
+	$(CC) $(CFLAGS) -c environment/coin_flip.c
+
+environment.o: environment/environment.c environment/environment.h environment/environment.r environment/class.h environment/class.r _utils/macros.h _utils/types.h
+	$(CC) $(CFLAGS) -c environment/environment.c
+
+class.o: environment/class.c environment/class.h environment/class.r _utils/macros.h _utils/types.h
+	$(CC) $(CFLAGS) -c environment/class.c
+
+agent.o: agent/agent.c agent/agent.h environment/environment.r environment/environment.h environment/class.r environment/class.h predict/context_tree.h _utils/types.h _utils/macros.h search/monte_node.h bit_vector.h
+	$(CC) $(CFLAGS) -c agent/agent.c
+
+context_tree.o: predict/context_tree.c predict/context_tree.h predict/context_tree_node.h predict/ctw_list.h
+	$(CC) $(CFLAGS) -c predict/context_tree.c
+
+context_tree_node.o: predict/context_tree_node.c predict/context_tree_node.h
+	$(CC) $(CFLAGS) -c predict/context_tree_node.c
+
+ctw_iterator.o: predict/ctw_iterator.c
+	$(CC) $(CFLAGS) -c predict/ctw_iterator.c
+
+ctw_list.o: predict/ctw_list.c predict/ctw_list.h predict/context_tree_node.h
+	$(CC) $(CFLAGS) -c predict/ctw_list.c
+
+dict.o: search/dict.c search/dict.h search/monte_node.h
+	$(CC) $(CFLAGS) -c search/dict.c
+
+search.o: search/search.c search/dict.h search/monte_node.h agent/agent.h environment/environment.h environment/environment.r environment/class.h environment/class.r _utils/types.h
+	$(CC) $(CFLAGS) -c search/search.c
+
+bit_vector.o: bit_vector.c bit_vector.h
+	$(CC) $(CFLAGS) -c bit_vector.c
+
+clean:
+	$(RM) $(OUT_NAME) *.o *~
+
