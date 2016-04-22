@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     coin_flip.h
 // CREATED:  2016-04-21 16:23:23
-// MODIFIED: 2016-04-21 20:46:38
+// MODIFIED: 2016-04-22 15:31:29
 ////////////////////////////////////////////////////////////////////
 
 #ifndef COIN_FLIP_H
@@ -25,7 +25,7 @@
     const u08     Number_States       = 0x00000002;
 
     double __rp();
-    static u32Tuple perform_action ( void * _self, u32 action_t );
+    static u32Tuple * perform_action ( void * _self, u32 action_t );
     static void CF_print(void * _self);
 
 #endif

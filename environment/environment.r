@@ -17,12 +17,13 @@
         u32      _action;
         u08      _is_finished;
         u32      _observation;
-        va_list* _options;
+        va_list  _options;
         u08      _reward;
         u32      *_valid_actions;
         u32      *_valid_observations;
         u32      *_valid_rewards;
-    } Environment; //---------------------------------------------------
+        u32      num_actions;
+    };//---------------------------------------------------
     
     #define action(e) (((const struct Environment *)(e)) -> _action)
     #define is_finished(e) ((const struct Environment *)(e)) -> _is_finished

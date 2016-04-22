@@ -3,14 +3,14 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 00:04:48
+// MODIFIED: 2016-04-22 14:18:35
 ////////////////////////////////////////////////////////////////////
 
 #ifndef ENV_H
     #define ENV_H
     #include "../_utils/types.h"
 
-    extern  void * Environment;
+    extern const void * Environment;
 
     // define any functions here
     u32  action_bits          ( void * _self );
@@ -29,5 +29,7 @@
     u32  minimum_action       ( void * _self );
     u32  minimum_observation  ( void * _self );
     u32  minimum_reward       ( void * _self );
+
+    u32 LG2 ( u32 x );
 
 #endif
