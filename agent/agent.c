@@ -105,7 +105,10 @@ static double average_reward ( void * _self )
 static u32 generate_random_action ( void * _self )
 {
     struct Agent * self = _self;
-    return choose_random ( self->environment -> _valid_actions );
+
+    // TODO: Replace this with the NUMBER of valid actions
+    int actionIndex = rand() % 2;
+    self->environment->_valid_actions[actionIndex];
 }
 
 static u32 maximum_action ( void * _self )
