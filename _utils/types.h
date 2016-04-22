@@ -28,5 +28,6 @@
 
 #ifndef BOOLDEF
     #define BOOLDEF
+    #include <stdbool.h>
     typedef bool *             b_lst;
 #endif

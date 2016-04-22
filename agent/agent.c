@@ -7,12 +7,12 @@
 
 #include <stddef.h>
 #include "../_utils/types.h"
+#include "../_utils/macros.h"
 #include "../_object/class.r"
 #include "../_object/class.h"
 #include "../predict/context_tree.h"
-#include "../util.h"
 #include "../bit_vector.h"
-
+#include "agent.r"
 
 static void * Agent_init ( void * _self, va_list * args )
 {

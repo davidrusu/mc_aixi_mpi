@@ -10,7 +10,7 @@
 #define CLASS_R
 
 #include <stdarg.h>
-#include "types.h"
+#include "../_utils/types.h"
 
 struct Class {
     size_t  size;
