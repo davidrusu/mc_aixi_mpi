@@ -3,11 +3,13 @@
 // EMAIL:    robert@morouney.com
 // FILE:     macros.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 12:03:42
+// MODIFIED: 2016-04-21 23:52:16
 ////////////////////////////////////////////////////////////////////
 
 #ifndef MACRO_H
     #define MACRO_H
+    
+    #include "types.h"
 
     #define BLOCK_START {
 
@@ -94,16 +96,16 @@
         LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
     };
 
-    register unsigned int LOG2N ( unsigned int x )
+    u32 LOG2N ( u32 x )
     {
-        register unsigned int ret, t, tt; // temp var2
+        register u32 ret, t, tt; // temp var2
         
-        if (tt = x >> 16)
+        if (tt == x >> 16)
             ret = (t = tt >> 8) ? 24 + LogTable256[t] : 16 + LogTable256[tt];
         else
             ret = (t = x >> 8) ? 8 + LogTable256[t] : LogTable256[x];
         
-        return r;
+        return (u32) ret;
     }
 
 
