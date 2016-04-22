@@ -54,12 +54,12 @@ static u32 history_size(void * _self) {
     return self->context_tree->history->size;
 }
 
-// ------------------------------------ secret sauce
 static const struct Class _Agent = {
-    Agent_init,
-    Agent_delete,
-    Agent_cpy,
-    Agent_str };
+        sizeof(struct Agent),
+        Agent_init,
+        Agent_delete,
+        Agent_cpy,
+        Agent_str };
 
 const void * Agent = & _Agent;
 // shhh.. -------------------------------------------

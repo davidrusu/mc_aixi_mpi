@@ -28,7 +28,7 @@
 
     static u32 history_size                             (void * _self);
     static BitVector * get_predicted_action_probability (void * _self, u32 action);
-    static u32 maximum_bits_needed                      (void * _self)
+    static u32 maximum_bits_needed                      (void * _self);
 
     static void model_revert                            (void* _self, AgentUndo* undo);
     static void model_update_percept                    ( void * _self, u32 observation, u32 reward );
@@ -40,7 +40,7 @@
     static double * playout                             (void * _self, u32 horizon);
 
     static void  search                                 ( void * _self );
-    static void  reset                                  ( void * _self );
+    static void  reset                                  ( void * _self );;
 
 
 #endif
