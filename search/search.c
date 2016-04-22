@@ -9,29 +9,25 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
 #include "dict.h"
 #include "monte_node.h"
-// #inclued "../bit_vector.h"
 #include "../agent/agent.h"
+#include "../environment/environment.r"
+#include "../_utils/types.h"
 
-// TODO: Verify if these actually matter or not
 #define NODE_TYPE_CHANCE 0
 #define NODE_TYPE_DECISION 1
 
-// Constants used for the class attributes
-// pyaixi: these are class attributes
-#define MONTE_EXPLORATION_CONSTANT 2.0
-#define MONTE_UNEXPLORED_BIAS 1000000000.0
+#define MONTE_UNEXPLORED_BIAS 1000000000.0f
 
 // pyaixi: __init__
-// notes: the node type should match from the above above node type constants.
-// clients should call from one of those.
-MonteNode* monte_create_tree(int nodetype) {
+MonteNode* monte_create_tree(u32 nodeType) {
     MonteNode* root = (MonteNode* ) malloc(sizeof(MonteNode));
 
     // It's better to be explicit, as this is a direct port
     root->mean = 0.0;
-    root->type = nodetype;
+    root->type = nodeType;
     root->visits = 0;
 
     // Be careful, this could cause leaks if we forget to deallocate later...
@@ -43,10 +39,8 @@ MonteNode* monte_create_tree(int nodetype) {
 
 int _monte_select_action(MonteNode* tree, struct Agent* agent) {
     // returns -1 if no vaild action
-  
-    // todo: populate these with agent.horizon
-    // and agent.maximum_reward
-    float agent_horizon = 0;
+
+    float agent_horizon = agent->horizon;
     float agent_max_reward = Agent_maximum_reward(agent)/1;
 
     float explore_bias = agent_horizon * agent_max_reward;
@@ -55,40 +49,46 @@ int _monte_select_action(MonteNode* tree, struct Agent* agent) {
 
     printf("%f", exploration_numerator);
 
-    // desu???
+    // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
     int best_action = 0;
+    double best_priority = FLT_MAX;
 
-    // TODO: ??? profit
-    // todo: implement the loop from lines #182
-    // to lines 202; it's straight forward but
+    u32 i = 0;
+    for(i = 0; i < agent->environment->num_actions; i++) {
+        u32 action = agent->environment->_valid_actions[i];
+        MonteNode* node = dict_find(tree->actions, action);
 
-    // for each valid action...
-        // do the update and selection procedure randomly
-    // end for
+        double priority = 0;
 
+        if(node == NULL  || node->visits == 0)  {
+            priority = MONTE_UNEXPLORED_BIAS;
+        } else {
+          priority = node->mean + (explore_bias * sqrt(exploration_numerator / node->visits));
+        }
+
+        if(priority > (best_priority + (rand() * 0.001))) {
+            best_action = action;
+            best_priority = priority;
+        }
+
+    }
     return best_action;
 }
 
 
 // pyaixi: sample(agent, horizon)
 // notes: we require some more work here
-// todo: resolve the agent pointer to some structure
-float monte_sample(MonteNode* tree, struct Agent* agent, int horizon) {
-    float reward = 0.0;
+float monte_sample(MonteNode* tree, struct Agent* agent, u32 horizon) {
+    double reward = 0.0;
 
     if(horizon == 0) {
         // reached maximum search depth
         return reward;
     } else if(tree->type == NODE_TYPE_CHANCE) {
-        // todo: require use to be able actually fill in these values
-        int observation = 0;
-        int random_reward = 0;
+        u32Tuple* tuple = Agent_generate_percept_and_update(agent);
 
-        // todo: implement this properly with an agent API
-
-        // pyaixi: agent.generate_percept_and_update()
-        // line: 124
-
+        u32 observation = tuple->first;
+        u32 random_reward = tuple->second;
 
         bool notInTreeYet = dict_find(tree->children, observation) == NULL;
 
@@ -107,23 +107,18 @@ float monte_sample(MonteNode* tree, struct Agent* agent, int horizon) {
         }
 
         // Recurse
-        monte_sample(child, agent, horizon - 1);
+        reward = random_reward + monte_sample(child, agent, horizon - 1);
     } else if(tree->visits == 0) {
-        // TODO: Agent simulation will be required to play this out
-        // pyaixi: agent.playout(horizon)
-        // line  138
-        // simulate
-        reward = 5;
+        reward = Agent_playout(agent, horizon);
     }
     else {
-        // should this be not an int???
-        int action = _monte_select_action(tree, agent);
-        // TODO: implement line #143 - agent.model_update_action(action)
+        u32 action = _monte_select_action(tree, agent);
+        Agent_model_update_action(agent, action);
 
         MonteNode* child = dict_find(tree->actions, action);
         if(child == NULL) {
             child = monte_create_tree(NODE_TYPE_CHANCE);
-	    dict_add(tree->actions, action, child);
+    	    dict_add(tree->actions, action, child);
         }
 
         if(child == NULL) {

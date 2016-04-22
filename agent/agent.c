@@ -25,9 +25,11 @@ static void * Agent_init ( Agent* self, va_list * args )
     self -> learning_period = va_arg ( * args, u32 );
     self -> last_update = action_update;
     self -> total_reward = 0.0;
+    self -> horizon = 6;
 
     // TODO: Fill me in with a real value (should be the defined depth value...)
-    self->context_tree = ctw_create(50);
+    // This is correct for *COIN FLIP*
+    self->context_tree = ctw_create(4);
 
     return self;
 }
