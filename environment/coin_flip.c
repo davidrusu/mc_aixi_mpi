@@ -49,7 +49,7 @@ void * CF_init ( void * _self, va_list * args )
 
 double __rp() { return (double) rand() / (double)RAND_MAX; }
 
-u32Tuple perform_action ( void * _self, u32 action_t )
+static u32Tuple perform_action ( void * _self, u32 action_t )
 {
     Coin_Flip * self = _self;
 
@@ -95,3 +95,9 @@ static void CF_print(void * _self)
     printf ("Prediction = %x, Observation = %x, Reward = %x\n",
             prediction(self),observation(self),reward(self));
 }
+
+static const struct _Coin_Flip = {
+    sizeof(struct Coind_Flip), CF_init, NULL, NULL, NULL
+};
+
+const void * Coin_Flip = & _Coin_Flip;
