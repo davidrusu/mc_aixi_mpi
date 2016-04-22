@@ -12,7 +12,7 @@
 #include "dict.h"
 #include "monte_node.h"
 // #inclued "../bit_vector.h"
-#include "../agent/agent.r"
+#include "../agent/agent.h"
 
 // TODO: Verify if these actually matter or not
 #define NODE_TYPE_CHANCE 0
@@ -47,7 +47,7 @@ int _monte_select_action(MonteNode* tree, struct Agent* agent) {
     // todo: populate these with agent.horizon
     // and agent.maximum_reward
     float agent_horizon = 0;
-    float agent_max_reward = 0;
+    float agent_max_reward = Agent_maximum_reward(agent)/1;
 
     float explore_bias = agent_horizon * agent_max_reward;
     // 2.0f is hard-coded into the application
