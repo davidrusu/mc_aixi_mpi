@@ -17,19 +17,6 @@
 #include "../environment/environment.r"
 #include "../environment/environment.h"
 
-
-typedef struct Agent
-{
-    struct Environment * environment;
-    va_list              _options;
-    double               total_reward;
-    update_enum          last_update;
-    u32                  age;
-    u32                  learning_period;
-    ContextTree*         context_tree;
-} Agent;
-
-
 static void * Agent_init ( Agent* self, va_list * args )
 {
     self -> environment = cpy(va_arg(* args , struct Environment *));

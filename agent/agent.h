@@ -1,6 +1,18 @@
 #ifndef AGENT_H
     #define AGENT_H
 
+    typedef struct Agent
+    {
+        struct Environment * environment;
+        va_list              _options;
+        double               total_reward;
+        update_enum          last_update;
+        u32                  age;
+        u32                  learning_period;
+        ContextTree*         context_tree;
+    } Agent;
+
+
     static AgentUndo* Agent_clone_into_temp                   (Agent* self);
 
     static double  Agent_average_reward                       ( Agent* self);
