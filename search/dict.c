@@ -9,18 +9,8 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include "monte_node.c"
-
-typedef struct dict_entry_s {
-    int key;
-    MonteNode* value;
-} dict_entry_s;
-
-typedef struct dict_s {
-    int len;
-    int cap;
-    dict_entry_s *entry;
-} dict_s, *dict_t;
+#include "dict.h"
+#include "monte_node.h"
 
 int dict_find_index(dict_t dict, const int key) {
     for (int i = 0; i < dict->len; i++) {

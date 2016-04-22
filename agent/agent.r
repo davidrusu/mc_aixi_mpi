@@ -9,20 +9,19 @@
     #define AGENT_R
     #include <stddef.h>
     #include "../_utils/types.h"
-    #include "../environment/environment.h"
-
-    // #include the context tree here ...
+    #include "../environment/environment.r"
+    #include "../predict/context_tree.h"
 
     struct Agent
     {
-        const void *    class; // must be first
-        Environment *   environment;
-        va_list         _options;
-        double          total_reward;
-        update_enum     last_update;
-        u32             age;
-        u32             learning_period;
-        ContextTree*    context_tree;
+        const void *	     class; // must be first
+        struct Environment * environment;
+        va_list              _options;
+        double               total_reward;
+        update_enum          last_update;
+        u32                  age;
+        u32                  learning_period;
+        ContextTree*         context_tree;
     };
 
     #define age(a) (((const struct Agent *)(a)) -> age )
