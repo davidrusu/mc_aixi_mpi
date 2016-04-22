@@ -132,7 +132,7 @@ int main() {
     printf("Booting MC AIXI kernel...\n");
 
     // TODO: Create an environment...
-    struct Environment* environment = _get_environment();
+    struct Coin_Flip* environment = new ( struct Coin_Flip, 0.7 );
 
     // TODO: Create the agent
     Agent* agent = create_agent(environment, appOptions ->ct_depth, appOptions ->mc_simulations);
