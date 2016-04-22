@@ -16,6 +16,7 @@
 #include "../bit_vector.h"
 #include "../environment/environment.r"
 #include "../environment/environment.h"
+#include "agent.h"
 
 static void * Agent_init ( Agent* self, va_list * args )
 {
