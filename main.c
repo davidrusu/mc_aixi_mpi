@@ -2,7 +2,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include "summary.c"
+#include "environment/environment.r"
+#include "environment/environment.h"
+#include "agent/agent.h"
 
 /*
  * MC AIXI - C port of PyAIXI w/ MPI
@@ -47,9 +49,9 @@ Environment* _get_environment() {
 }
 
 float _random_0_1() {
-    return (float ) rand() / (float) RAND_MAX;
+    return (float)rand()/(float)(RAND_MAX/1);
 }
-void _interaction_loop(Agent* agent, Environment* environment, app_options* options) {
+void _interaction_loop(Agent* agent, struct Environment* environment, app_options* options) {
     printf("MC AIXI training warming up...");
     srand(1337);
 
@@ -66,8 +68,7 @@ void _interaction_loop(Agent* agent, Environment* environment, app_options* opti
     printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
 
     while(!isEnvironmentFinished) {
-        // TODO: Implement an API to get the agent age (Line #112)
-        int agent_age = 0;
+        int agent_age = agent->age;
 
         if(terminate_check && agent_age > options->terminate_age) {
             break;
@@ -75,35 +76,35 @@ void _interaction_loop(Agent* agent, Environment* environment, app_options* opti
 
         long cycle_start = time(NULL);
 
-        // TODO: Implement lines 120 and 121
-        int observation = 0;
-        int reward = 0;
+        // TODO: Implement lines 120 and 121 (properly, compile?
+        u32 observation = environment->_observation;
+        u32 reward = environment->_reward;
 
         if(options->learning_period > 0 && cycle > options->learning_period) {
             explore = false;
         }
 
-        // TODO: Implement the agent model perceptron update
-        // Implement line #129
 
+        Agent_model_update_percept(agent, observation, reward);
 
         bool explored =  false;
-        int action = -1;
+
+        u32 action = 0;
 
         if (explore && _random_0_1() < options->exploration) {
             explored =  true;
             printf("Agent is trying action at random...\n");
-            //  TODO: Implement agent random action (line 141)
-            // note: in both of these TODOs, we should update the action ID
+            action = Agent_generate_random_action(agent);
         }
         else {
             printf("Agent is trying to choose best action...\n");
-            // TODO: IMplement agent search (line 149)
+            action = Agent_search(agent);
         }
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
         // environment.perform_action(action)
-        // agent.model_update_action(action)
+
+        Agent_model_update_action(agent, action);
 
         long ticks_taken = time(NULL) - cycle_start;
 
@@ -119,18 +120,21 @@ void _interaction_loop(Agent* agent, Environment* environment, app_options* opti
         // TODO: Update the environment finish state
         // See beginning of this loop in PyAIXI.. need to call some kind of environment_is_finished(environment)
         // or something like that
+        isEnvironmentFinished = environment->_is_finished;
     }
 
 }
 
 int main() {
-    // TODO: Later, maybe suppor command line arguments...
+    // TODO: Later, maybe support command line arguments...
     app_options* appOptions = _make_default_options();
 
     printf("Booting MC AIXI kernel...\n");
 
-    // Load the environment here that we want to get
-    Environment* environment = _get_environment();
+    // TODO: Create an environment...
+    struct Environment* environment = _get_environment();
+
+    // TODO: Create the agent
     Agent* agent = create_agent(environment, appOptions ->ct_depth, appOptions ->mc_simulations);
 
     // TODO: Line #443: Do we need to copy some of the options into here?

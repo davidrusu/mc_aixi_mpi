@@ -50,6 +50,6 @@
     static double Agent_percept_probability                   (Agent* self, u32 observation, u32 reward);
     static double Agent_playout                             (Agent* self, u32 horizon);
 
-    static void  Agent_search                                 ( Agent* self);
+    static u32 Agent_search                                 ( Agent* self);
     static void  Agent_reset                                  ( Agent* self );
 #endif

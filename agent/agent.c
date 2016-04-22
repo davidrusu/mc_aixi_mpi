@@ -83,7 +83,7 @@ static double Agent_average_reward ( Agent * self)
 static u32 Agent_generate_random_action ( Agent * self)
 {
     // TODO: Replace this with the NUMBER of valid actions
-    int actionIndex = rand() % 2;
+    int actionIndex = rand() % self->environment->num_actions;
     return self->environment->_valid_actions[actionIndex];
 }
 

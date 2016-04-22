@@ -16,6 +16,8 @@
 #include "../environment/environment.r"
 #include "../_utils/types.h"
 
+#define ARC4RANDOM_MAX      0x100000000
+
 #define NODE_TYPE_CHANCE 0
 #define NODE_TYPE_DECISION 1
 
@@ -66,7 +68,7 @@ int _monte_select_action(MonteNode* tree, struct Agent* agent) {
           priority = node->mean + (explore_bias * sqrt(exploration_numerator / node->visits));
         }
 
-        if(priority > (best_priority + (rand() * 0.001))) {
+        if(priority > (best_priority + ((float)rand()/(float)(RAND_MAX/1) * 0.001))) {
             best_action = action;
             best_priority = priority;
         }
