@@ -9,6 +9,7 @@
 #include "environment/coin_flip.r"
 #include "environment/coin_flip.h"
 #include "agent/agent.h"
+#include "_utils/macros.h"
 
 /*
  * MC AIXI - C port of PyAIXI w/ MPI
@@ -71,6 +72,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         int agent_age = agent->age;
 
         if(terminate_check && agent_age > options->terminate_age) {
+            TRACE("Interaction looked broken; terminate age exceeded.", "main");
             break;
         }
 
@@ -102,7 +104,8 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         }
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
-        // environment.perform_action(action)
+        perform_action(environment, action);
+
 
         Agent_model_update_action(agent, action);
 
@@ -131,8 +134,12 @@ int main() {
 
     printf("Booting MC AIXI kernel...\n");
 
+    TRACE("Creating environment...\n", "desu");
+
     // TODO: Create an environment...
     struct Coin_Flip* environment = new (Coin_Flip, 0.7f);
+
+    TRACE("Creating agent...\n", "desu");
 
     // TODO: Create the agent
     Agent* agent = malloc(sizeof(Agent));

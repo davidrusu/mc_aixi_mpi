@@ -7,7 +7,7 @@
 #//////////////////////////////////////////////////////////////////
 
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -lm -g -Wall
 OUT_NAME = main_aixi
 default: main_aixi
 
