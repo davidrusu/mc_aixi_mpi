@@ -203,6 +203,8 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     } else {
        ctw_update_vector(self->context_tree, symbols);
     }
+    
+    TRACE("reward = %d \n", reward);
 
     self->total_reward += reward;
     self->last_update = percept_update;
@@ -245,7 +247,7 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
 
 
     u32 best_action = Agent_generate_random_action(self);
-    double best_mean = 50;
+    double best_mean = (double)((u32)-1);
 
     for(i = 0; i < self->environment->num_actions; i++) {
         u32 action =  self->environment->_valid_actions[i];
