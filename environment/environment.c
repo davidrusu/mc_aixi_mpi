@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 21:18:57
+// MODIFIED: 2016-04-22 22:45:09
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -208,8 +208,8 @@ u32  maximum_reward ( void * _self )
     
     foreach ( u32 const * x , self->_valid_rewards)
     { 
-        idx++;
-        TRACE ( "%d\n" , *x );
+        if ( *x ) idx++;
+        else break;
     }
     
     return self->_valid_rewards[idx];
