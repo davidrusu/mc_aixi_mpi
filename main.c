@@ -66,7 +66,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
     bool isEnvironmentFinished = false;
     int cycle = 1;
 
-    printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
+    printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
 
     while(!isEnvironmentFinished) {
         int agent_age = agent->age;
@@ -113,7 +113,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         long ticks_taken = time(NULL) - cycle_start;
 
         // Just a large padded statement about what is going on in the world as we step through
-        printf("%-20d%-20d%-20d%-20d%-20d%-20f%-20s%-20s%-20lu%-20s\n", cycle, observation, reward, action, explored, options->exploration, "N/A", "N/A", ticks_taken, "N/A");
+        printf("%-12d%-12d%-12d%-12d%-12d%-12f%-12s%-12s%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, "N/A", "N/A", ticks_taken, "N/A");
 
         if(explore) {
             options->exploration *= options->explore_decay;
