@@ -121,7 +121,7 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
     } else {
       ctw_save(Agent->context_tree, CTW_DATA_FILE);
       int i;
-      for (i = 0; i < P; i++) {
+      for (i = 1; i < P; i++) {
 	int data = 1;
 	MPI_Send(&data, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 
