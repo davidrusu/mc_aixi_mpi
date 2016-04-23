@@ -54,7 +54,7 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
 
     // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
     u32 best_action = 0;
-    double best_priority = FLT_MAX;
+    double best_priority = -FLT_MAX;
 
     u32 i = 0;
     for(i = 0; i < agent->environment->num_actions; i++) {
@@ -68,8 +68,9 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
         } else {
           priority = node->mean + (explore_bias * sqrt(exploration_numerator / node->visits));
         }
-
-        if(priority > (best_priority + ((float)rand()/(float)(RAND_MAX/1) * 0.001))) {
+	
+	//printf("selecting action b_p %f, p %f a %u \n", best_priority, priority, action);
+        if(priority > (best_priority - ((float)rand()/(float)(RAND_MAX/1) - 0.5) * 0.001)) {
             best_action = action;
             best_priority = priority;
         }
@@ -92,9 +93,9 @@ float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
 
         u32 observation = tuple->first;
         u32 random_reward = tuple->second;
-
+	//	printf("gen reward %u\n", random_reward);
         bool notInTreeYet = dict_find(tree->children, observation) == NULL;
-
+	
         if(notInTreeYet) {
             MonteNode* newChild = monte_create_tree(NODE_TYPE_DECISION);
             dict_add(tree->children, observation, newChild);
@@ -111,7 +112,7 @@ float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
 
         // Recurse
         reward = random_reward + monte_sample(child, agent, horizon - 1);
-    } else if(tree->visits == 0) {
+    } else if (tree->visits == 0) {
         reward = Agent_playout(agent, horizon);
     }
     else {
@@ -132,8 +133,9 @@ float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
         // pyaixi note: this should be just horizon, not horizon -1... or maybe it  should be -1
         // the authors do not really know
         reward = monte_sample(child, agent, horizon);
+	//printf("decision_node %f\n", reward);
     }
-
+    //printf("reward %f\n", reward);
     // This portion needs to be executed no matter what
     tree->mean = (reward + (tree->visits * tree->mean)) / (tree->visits + 1.0);
     tree->visits = tree->visits + 1;
