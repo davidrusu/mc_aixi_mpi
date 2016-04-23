@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 22:45:09
+// MODIFIED: 2016-04-23 04:34:09
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -22,10 +22,13 @@ static void * Environment_init ( void * _self, va_list * args )
     struct Environment * self = ( struct Environment * ) _self;
 
     va_copy ( self -> _options, *args );
-//    self -> _options    = *args;
     self -> _is_finished   = 0x00;
     self -> _reward        = 0x00;
     self -> _action        = 0x00;
+    
+    #ifdef DEBUG 
+        TRACE("Environment initialized\n","Environment_init\n");
+    #endif
 
     return self;
 }//-------------------------------------------------------------------
@@ -41,6 +44,11 @@ static void * Environment_delete ( void * _self )
     //free ( self->_valid_observations )//, self->_valid_observations = 0;
     //free ( self->_valid_actions )//,      self->_valid_actions = 0;
     free ( self );
+    
+    #ifdef DEBUG 
+        TRACE("Environment destroyed\n","Environment_delete\n");
+    #endif
+
     return self;
 }//-------------------------------------------------------------------
 
@@ -48,6 +56,10 @@ static void * Environment_delete ( void * _self )
 static void * Environment_cpy ( const void * _self )
 {
     const struct Environment * self = _self;
+
+    #ifdef DEBUG 
+        TRACE("Environment copied\n","Environment_cpy\n");
+    #endif
 
     return new ( Environment , self->_options );
 }//-------------------------------------------------------------------
@@ -62,6 +74,9 @@ static void * Environment_str ( const void * _self )
     
     sprintf ( pstring, "action = %x, observation = %x, reward = %x\n",
              self->_action, self->_observation, self->_reward );
+    #ifdef DEBUG 
+        TRACE(pstring," Environment_init");
+    #endif
     
     return pstring;
 }//-------------------------------------------------------------------
