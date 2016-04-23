@@ -58,7 +58,7 @@ AgentUndo* Agent_clone_into_temp(Agent* self) {
 BitVector * Agent_encode_action(Agent* self, u32 action) {
    BitVector* vector = bv_from_uint32(action);
    ctw_update_history(self->context_tree, vector);
-   self->age++;
+   //self->age++;
    self->last_update = action_update;
    return vector;
 }
@@ -79,7 +79,7 @@ double Agent_average_reward ( Agent * self)
 {
     double average = 0.0;
     if ( self -> age > 0 )
-        average = ( self -> total_reward ) / ( self -> age );
+        average = ( self -> total_reward ) / ( self->age );
     return average;
 }
 

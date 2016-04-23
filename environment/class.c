@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     class.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 13:45:02
+// MODIFIED: 2016-04-23 01:41:38
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -27,9 +27,11 @@ void * new ( const void * _class, ... )
     if ( class->__init__ )
     {
         va_list args;
-
+        #ifdef DEBUG
+            TRACE("Class Created", "__init__",class->__str__);
+        #endif
         va_start( args, _class );                 // intialize '...'
-	mem = class->__init__( mem, &args );      // call constructor
+	    mem = class->__init__( mem, &args );      // call constructor
         va_end( args );                           // clean
     }
     
@@ -40,9 +42,12 @@ void delete ( void * self )
 {
     const struct Class ** parent = self;
 
-    if ( self && * parent && ( * parent )->__delete__ )
+    if ( self && * parent && ( * parent )->__delete__ ) {
         self = ( * parent )->__delete__(self);
-    
+        #ifdef DEBUG
+            TRACE("Class Destroyed","delete(...)",class->__str__);
+        #endif
+    } 
     free(self);
 }
 
@@ -51,6 +56,11 @@ void * cpy ( const void * self )
     const struct Class * const * parent = self;
 
     assert ( self && parent && ( * parent )->__copy__);
+    
+    #ifdef DEBUG
+        TRACE("Class Copied","cpy(..)",class->__str__);
+    #endif
+    
     return ( * parent )->__copy__(self);
 }
 
@@ -61,7 +71,7 @@ char * print ( const void * self )
     sprintf(pstring,"%s",( * parent )->__str__(self));
     
     #ifdef DEBUG
-        TRACE ( pstring );
+        TRACE ( "Generated Print String: ", "print(...)", pstring );
     #endif
     
     return pstring;

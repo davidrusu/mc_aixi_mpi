@@ -38,9 +38,9 @@ app_options* _make_default_options() {
     options->agent_horizon = 5;
     options->ct_depth = 30;
     options->environment = 0;
-    options->exploration = 0.0f;
+    options->exploration = 0.001f;
     options->explore_decay = 1.0f;
-    options->learning_period = 0;
+    options->learning_period = 30;
     options->mc_simulations = 300;
     options->profile = false;
     options->terminate_age = 0;
@@ -124,10 +124,9 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
 	if (cycle % 1 == 0) {
 	  printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observe.", "Reward", "Action", "Explored", "Exp. Rate", "Tot. Reward", "Avg Reward", "Time", "Model Size");
-        // Just a large padded statement about what is going on in the world as we step through
+    }   // Just a large padded statement about what is going on in the world as we step through
         //printf("%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
         printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12f%-12f%-12lu%-12u\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, ctw_size(agent->context_tree));
-	}
 
         if(explore) {
             options->exploration *= options->explore_decay;
