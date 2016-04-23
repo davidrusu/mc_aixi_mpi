@@ -90,7 +90,7 @@ u32  action_bits ( void * _self )
     u32 max_action = 0;
     
     foreach ( u32 const * action, self->_valid_actions )
-        max_action = *action ? *action > max_action : max_action;
+        max_action = *action && *action > max_action ? *action : max_action;
     
     return LG2( max_action );
     
@@ -105,7 +105,7 @@ u32  observation_bits ( void * _self )
     u32 max_observation = 0;
     
     foreach ( u32 const * observation, self->_valid_observations )
-        max_observation = *observation ? *observation > max_observation : max_observation;
+        max_observation = *observation && *observation > max_observation ? *observation : max_observation;
     
     return LG2( max_observation );
 
@@ -120,7 +120,7 @@ u32  reward_bits ( void * _self )
     u32 max_reward = 0;
     
     foreach ( u32 const * reward, self->_valid_rewards )
-        max_reward = *reward ? *reward > max_reward : max_reward;
+        max_reward = *reward && *reward > max_reward ? *reward : max_reward;
     
     return LG2( max_reward );
     
@@ -193,7 +193,7 @@ u32  maximum_observation ( void * _self )
     u16 idx = 0;
     
     foreach ( u32 const * x , self->_valid_observations)
-    idx++;
+      idx++;
     
     return self->_valid_observations[idx];
     

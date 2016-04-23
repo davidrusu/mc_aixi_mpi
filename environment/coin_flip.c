@@ -27,15 +27,15 @@ void * CF_init ( void * _self, va_list * args )
     
     self -> _ . num_actions             = 2;
     
-    self -> _ . _valid_actions          = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_actions          = calloc (1, 2 * sizeof ( u32 ) );
     self -> _ . _valid_actions[0]       = 0;
     self -> _ . _valid_actions[1]       = 1;
        
-    self -> _ . _valid_observations     = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_observations     = calloc (1, 2 * sizeof ( u32 ) );
     self -> _ . _valid_observations[0]  = 0;
     self -> _ . _valid_observations[1]  = 1;
    
-    self -> _ . _valid_rewards          = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_rewards          = calloc (1, 2 * sizeof ( u32 ) );
     self -> _ . _valid_rewards[0]       = 0;
     self -> _ . _valid_rewards[1]       = 1;
    
@@ -92,7 +92,7 @@ u32Tuple* perform_action ( void * _self, u32 action_t )
     self -> _ . _observation    = observation_t;
     self -> _ . _reward         = reward_t;
 
-    u32Tuple* tuple = malloc (sizeof(u32Tuple));
+    u32Tuple* tuple = calloc (1, sizeof(u32Tuple));
     tuple -> first = observation_t;
     tuple -> second = reward_t;
 
