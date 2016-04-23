@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     macros.h
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-21 23:52:16
+// MODIFIED: 2016-04-22 20:07:35
 ////////////////////////////////////////////////////////////////////
 
 #ifndef MACRO_H
@@ -85,29 +85,4 @@
 
     // % Call function and exit if error occured
     #define CALL_AND_EXIT_ON_ERR(function) CALL_AND_CHECK(function, 0)
-
-
-    #define LT(n) n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n
-    const char LogTable256[256] =
-    {
-    
-        -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
-        LT(4), LT(5), LT(5), LT(6), LT(6), LT(6), LT(6),
-        LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
-    };
-
-    u32 LOG2N ( u32 x )
-    {
-        register u32 ret, t, tt; // temp var2
-        
-        if (tt = x >> 16)
-            ret = (t = tt >> 8) ? 24 + LogTable256[t] : 16 + LogTable256[tt];
-        else
-            ret = (t = x >> 8) ? 8 + LogTable256[t] : LogTable256[x];
-        
-        return (u32) ret;
-    }
-
-
-
 #endif
