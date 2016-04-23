@@ -29,9 +29,9 @@ void * new ( void * _class, ... )
     {
         va_list args;
 
-        va_start( args, _class );                        // intialize '...'
-          mem = class->__init__( mem, ( & (args) ) );    // call constructor
-        va_end( args );                                  // clean
+        va_start( args, _class );                 // intialize '...'
+	mem = class->__init__( mem, &args );      // call constructor
+        va_end( args );                           // clean
     }
     
     return mem;

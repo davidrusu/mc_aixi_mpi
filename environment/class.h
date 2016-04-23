@@ -11,7 +11,7 @@
 
 void * new      (  void * class, ... );
 void delete     ( void * item );
-void * cpy        ( const void * self );
+void * cpy      ( const void * self );
 char * print    ( const void * self );
 
 #endif

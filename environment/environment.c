@@ -27,10 +27,6 @@ static void * Environment_init ( void * _self, va_list * args )
     self -> _reward        = 0x00;
     self -> _action        = 0x00;
 
-    /// TODO: _valid_actions and _valid_observations and _observation need
-    // to be initialized.  Must discuss types with the group first.
-    //
-
     return self;
 }//-------------------------------------------------------------------
 
@@ -86,7 +82,7 @@ static const struct Class _Environment = {
 const void * Environment = & _Environment;
 
 // def action_bits():
-u32  action_bits          ( void * _self )
+u32  action_bits ( void * _self )
 {
     struct Environment * self = _self;
     assert ( self->_valid_actions != NULL);
@@ -101,7 +97,7 @@ u32  action_bits          ( void * _self )
 }//-------------------------------------------------------------------
 
 // def observation_bits():
-u32  observation_bits     ( void * _self )
+u32  observation_bits ( void * _self )
 {
     struct Environment * self = _self;
     assert ( self->_valid_observations != NULL);
@@ -116,7 +112,7 @@ u32  observation_bits     ( void * _self )
 }//-------------------------------------------------------------------
 
 // def reward_bits():
-u32  reward_bits          ( void * _self )
+u32  reward_bits ( void * _self )
 {
     struct Environment * self = _self;
     assert ( self->_valid_rewards != NULL);
@@ -131,7 +127,7 @@ u32  reward_bits          ( void * _self )
 }//-------------------------------------------------------------------
 
 // def perception_bits():
-u32  percption_bits       ( void * _self )
+u32  percption_bits ( void * _self )
 {
     struct Environment * self = _self;
     return reward_bits(self) + action_bits(self);
@@ -139,7 +135,7 @@ u32  percption_bits       ( void * _self )
 }//-------------------------------------------------------------------
 
 // check if the action is valid
-u08  is_valid_action      ( void * _self, u32   action )
+u08  is_valid_action ( void * _self, u32   action )
 {
     
     struct Environment * self = _self;
@@ -165,7 +161,7 @@ u08  is_valid_observation ( void * _self, u32   observation )
 }//-------------------------------------------------------------------
 
 // check if the action is a valid action
-u08  is_valid_reward      ( void * _self, u32   reward )
+u08  is_valid_reward ( void * _self, u32   reward )
 {
     
     struct Environment * self = _self;
@@ -178,7 +174,7 @@ u08  is_valid_reward      ( void * _self, u32   reward )
 }//-------------------------------------------------------------------
 
 // Get maximum action
-u32  maximum_action       ( void * _self )
+u32  maximum_action ( void * _self )
 {
     struct Environment * self = _self;
     u16 idx = 0;
@@ -191,7 +187,7 @@ u32  maximum_action       ( void * _self )
 }//-------------------------------------------------------------------
 
 // Get maximum observation
-u32  maximum_observation  ( void * _self )
+u32  maximum_observation ( void * _self )
 {
     struct Environment * self = _self;
     u16 idx = 0;
@@ -205,7 +201,7 @@ u32  maximum_observation  ( void * _self )
 
 
 // Get maximum reward
-u32  maximum_reward       ( void * _self )
+u32  maximum_reward ( void * _self )
 {
     struct Environment * self = _self;
     u16 idx = 0;
@@ -218,7 +214,7 @@ u32  maximum_reward       ( void * _self )
 }//-------------------------------------------------------------------
 
 // Get minimum action
-u32  minimum_action       ( void * _self )
+u32  minimum_action ( void * _self )
 {
     struct Environment * self = _self;
     return self->_valid_actions[0];
@@ -226,7 +222,7 @@ u32  minimum_action       ( void * _self )
 }//-------------------------------------------------------------------
 
 // Get minimum observation
-u32  minimum_observation  ( void * _self )
+u32  minimum_observation ( void * _self )
 {
     struct Environment * self = _self;
     return self->_valid_observations[0];
@@ -234,7 +230,7 @@ u32  minimum_observation  ( void * _self )
 }//-------------------------------------------------------------------
 
 // Get minimum reward
-u32  minimum_reward       ( void * _self )
+u32  minimum_reward ( void * _self )
 {
     struct Environment * self = _self;
     return self->_valid_rewards[0];
@@ -246,7 +242,6 @@ u32 LG2 ( u32 x )
     #define LT(n) n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n
     const char LogTable256[256] =
     {
-        
         -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
         LT(4), LT(5), LT(5), LT(6), LT(6), LT(6), LT(6),
         LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
@@ -254,11 +249,10 @@ u32 LG2 ( u32 x )
     
     register u32 ret, t, tt; // temp var2
     
-    if (tt == x >> 16)
+    if (tt = x >> 16)
         ret = (t = tt >> 8) ? 24 + LogTable256[t] : 16 + LogTable256[tt];
     else
         ret = (t = x >> 8) ? 8 + LogTable256[t] : LogTable256[x];
     
     return (u32) ret;
 }//--------------------------------------------------------------------
-
