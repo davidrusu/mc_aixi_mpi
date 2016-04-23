@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 22:10:36
+// MODIFIED: 2016-04-22 22:14:41
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -58,11 +58,7 @@ void * CF_init ( void * _self, va_list * args )
 
 double __rp() { return (double) rand() / (double)RAND_MAX; }
 
-<<<<<<< HEAD
-static u32Tuple * perform_action ( void * _self, u32 action_t )
-=======
 u32Tuple* perform_action ( void * _self, u32 action_t )
->>>>>>> ccc08c2e31ce7d9e8dcd6da32661882b92da2fa3
 {
     struct Coin_Flip * self = _self;
 
