@@ -16,7 +16,7 @@
         ContextTree*         context_tree;
     } Agent;
 
-    void * Agent_init ( Agent* self, va_list * args );
+    Agent* Agent_init ( Agent* self, void * _env, u32 learn  );
     AgentUndo* Agent_clone_into_temp                   (Agent* self);
 
     double  Agent_average_reward                       ( Agent* self);

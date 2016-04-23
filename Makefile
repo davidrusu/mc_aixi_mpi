@@ -3,7 +3,7 @@
 # EMAIL:    robert@morouney.com 
 # FILE:     Makefile_2
 # CREATED:  2016-04-22 18:13:19
-# MODIFIED: 2016-04-22 20:00:01
+# MODIFIED: 2016-04-22 21:14:01
 #//////////////////////////////////////////////////////////////////
 
 CC = gcc
@@ -12,7 +12,7 @@ OUT_NAME = main_aixi
 default: main_aixi
 
 main_aixi: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
-	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_iterator.o ctw_list.o dict.o search.o bit_vector.o main.o
+	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
 
 coin_flip.o: environment/coin_flip.c environment/coin_flip.h environment/coin_flip.r environment/environment.h environment/environment.r environment/class.h environment/class.r _utils/macros.h _utils/types.h
 	$(CC) $(CFLAGS) -c environment/coin_flip.c

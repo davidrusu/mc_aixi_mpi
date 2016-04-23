@@ -17,11 +17,12 @@
 #include "agent.h"
 #include "../search/monte_node.h"
 
-  void * Agent_init ( Agent* self, va_list * args )
+  Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 {
-    self -> environment = cpy(va_arg(* args , struct Environment *));
+    const struct Coin_Flip * env = _env;
+    self -> environment = cpy(env);
     self -> age = 0;
-    self -> learning_period = va_arg ( * args, u32 );
+    self -> learning_period = learn;
     self -> last_update = action_update;
     self -> total_reward = 0.0;
     self -> horizon = 6;
