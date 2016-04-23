@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 21:31:44
+// MODIFIED: 2016-04-22 21:50:07
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>

@@ -20,7 +20,7 @@
   Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 {
     const struct Coin_Flip * env = _env;
-    self -> environment = cpy(env);
+    self -> environment = CF_init(_env, 0.7);
     self -> age = 0;
     self -> learning_period = learn;
     self -> last_update = action_update;
