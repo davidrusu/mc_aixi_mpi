@@ -52,7 +52,7 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
     printf("%f", exploration_numerator);
 
     // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
-    int best_action = 0;
+    u32 best_action = 0;
     double best_priority = FLT_MAX;
 
     u32 i = 0;
