@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 21:50:07
+// MODIFIED: 2016-04-22 22:10:36
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -58,7 +58,7 @@ void * CF_init ( void * _self, va_list * args )
 
 double __rp() { return (double) rand() / (double)RAND_MAX; }
 
-static u32Tuple* perform_action ( void * _self, u32 action_t )
+static u32Tuple * perform_action ( void * _self, u32 action_t )
 {
     struct Coin_Flip * self = _self;
 
@@ -106,8 +106,14 @@ static void CF_print(void * _self)
             action(self),observation(self),reward(self));
 }
 
+void * CF_cpy ( void * _self ) 
+{
+    struct Coin_Flip * self = _self;
+    return new ( Coin_Flip , probability(_self) );
+}
+
 static const struct Class _Coin_Flip = {
-    sizeof(struct Coin_Flip), CF_init, NULL, NULL, NULL
+    sizeof(struct Coin_Flip), CF_init, NULL, CF_cpy, NULL
 };
 
 const void * Coin_Flip = & _Coin_Flip;

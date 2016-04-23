@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     coin_flip.h
 // CREATED:  2016-04-21 16:23:23
-// MODIFIED: 2016-04-22 21:28:37
+// MODIFIED: 2016-04-22 21:58:19
 ////////////////////////////////////////////////////////////////////
 
 #ifndef COIN_FLIP_H
