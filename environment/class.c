@@ -8,13 +8,12 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include <stdio.h>
 #include "class.h"
 #include "class.r"
 #include "../_utils/macros.h"
 
-void * new ( void * _class, ... )
+void * new ( const void * _class, ... )
 {
     const struct Class * class = _class;
     void * mem = calloc( 1, class->size );
