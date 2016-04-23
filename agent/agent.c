@@ -16,19 +16,21 @@
 #include "../environment/environment.h"
 #include "agent.h"
 #include "../search/monte_node.h"
+#include "../_utils/macros.h"
 
-  Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
+Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 {
     const struct Coin_Flip * env = _env;
-    self -> environment = CF_init(_env, 0.7);
+    TRACE("Prepping to build agent\n", "agent");
+
+    self -> environment = cpy ( env );
     self -> age = 0;
     self -> learning_period = learn;
     self -> last_update = action_update;
     self -> total_reward = 0.0;
     self -> horizon = 6;
 
-    // TODO: Fill me in with a real value (should be the defined depth value...)
-    // This is correct for *COIN FLIP*
+    TRACE("Building context tree for Agent", "agent");
     self->context_tree = ctw_create(4);
 
     return self;

@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 21:50:07
+// MODIFIED: 2016-04-22 22:14:41
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -106,8 +106,14 @@ static void CF_print(void * _self)
             action(self),observation(self),reward(self));
 }
 
+void * CF_cpy ( void * _self ) 
+{
+    struct Coin_Flip * self = _self;
+    return new ( Coin_Flip , probability(_self) );
+}
+
 static const struct Class _Coin_Flip = {
-    sizeof(struct Coin_Flip), CF_init, NULL, NULL, NULL
+    sizeof(struct Coin_Flip), CF_init, NULL, CF_cpy, NULL
 };
 
 const void * Coin_Flip = & _Coin_Flip;
