@@ -22,16 +22,21 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 {
     const struct Coin_Flip * env = _env;
     TRACE("Prepping to build agent\n", "agent");
-
     self -> environment = cpy ( env );
     self -> age = 0;
     self -> learning_period = learn;
     self -> last_update = action_update;
     self -> total_reward = 0.0;
     self -> horizon = 6;
+    u32 depth = 10;
 
     TRACE("Building context tree for Agent", "agent");
-    self->context_tree = ctw_create(62);
+    self->context_tree = ctw_create(depth);
+    
+    #ifdef DEBUG
+        TRACE("learning period = %d, horizon = %d, depth = %d", \
+                learn,self->horizon,depth);
+    #endif
 
     return self;
 }
