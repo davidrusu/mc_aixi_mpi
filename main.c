@@ -47,10 +47,6 @@ app_options* _make_default_options() {
     return options;
 }
 
-Environment* _get_environment() {
-    // TODO: Do we need to set some options here for the environment?
-    return (Environment*) malloc(sizeof(Environment));
-}
 
 float _random_0_1() {
     return (float)rand()/(float)(RAND_MAX/1);
@@ -60,7 +56,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
     srand(1337);
 
     bool explore =  options->exploration > 0;
-    if(0f > options->exploration || 0f > options->explore_decay || options->explore_decay > 1f) {
+    if(0.0f > options->exploration || 0.0f > options->explore_decay || options->explore_decay > 1.0f) {
         printf("Some exploration parameter is invalid. Application force quitting.\n");
         exit(1);
     }
@@ -140,7 +136,7 @@ int main() {
 
     // TODO: Create the agent
     Agent* agent = malloc(sizeof(Agent));
-    agent = Agent_init(agent, environment, appOptions->learning_period)
+    agent = Agent_init(agent, environment, appOptions->learning_period);
 
     // TODO: Line #443: Do we need to copy some of the options into here?
     // options->actions_bits = environment->action_bits()... for example
