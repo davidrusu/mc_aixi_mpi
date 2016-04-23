@@ -54,5 +54,6 @@
     double Agent_playout                             (Agent* self, u32 horizon);
 
     u32 Agent_search                                 ( Agent* self);
+    u32 Agent_search_mean                            ( Agent* self, double *mean);
     void  Agent_reset                                  ( Agent* self );
 #endif

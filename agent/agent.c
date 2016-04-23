@@ -269,6 +269,40 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     return best_action;
 }
 
+u32 Agent_search_mean (Agent* self, double *mean)
+{
+    // This function was not implemented properly
+    AgentUndo* undo = Agent_clone_into_temp(self);
+
+    MonteNode* node = monte_create_tree(NODE_TYPE_DECISION);
+
+    u32 i = 0;
+    // 300 sims
+    for(i = 0; i < 300;i++ ) {
+        monte_sample(node, self, self->horizon);
+        Agent_model_revert(self, undo);
+    }
+
+    u32 best_action = Agent_generate_random_action(self);
+    double best_mean = (double)((u32)-1);
+
+    for(i = 0; i < self->environment->num_actions; i++) {
+        u32 action =  self->environment->_valid_actions[i];
+        MonteNode* searchNode = dict_find(node->actions, action);
+
+        if(searchNode != NULL) {
+            double mean = searchNode->mean + ((float)rand()/(float)(RAND_MAX)) * 0.00001;
+            if(mean > best_mean) {
+                best_mean = mean;
+                best_action = action;
+            }
+        }
+    }
+
+    *mean = best_mean;
+    return best_action;
+}
+
   void Agent_reset ( Agent* self )
 {
     ctw_clear(self->context_tree);
