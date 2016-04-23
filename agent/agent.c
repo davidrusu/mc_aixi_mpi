@@ -58,7 +58,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
   BitVector * Agent_encode_action(Agent* self, u32 action) {
    BitVector* vector = bv_from_uint32(action);
    ctw_update_history(self->context_tree, vector);
-   self->age++;
+   //self->age++;
    self->last_update = action_update;
    return vector;
 }
@@ -75,11 +75,11 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     return bv_peek_uint32(symbols);
 }
 
-  double Agent_average_reward ( Agent * self, u32 cycles)
+  double Agent_average_reward ( Agent * self)
 {
     double average = 0.0;
     if ( self -> age > 0 )
-        average = ( self -> total_reward ) / ( cycles );
+        average = ( self -> total_reward ) / ( self->age );
     return average;
 }
 

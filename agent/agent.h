@@ -19,7 +19,7 @@
     Agent* Agent_init ( Agent* self, void * _env, u32 learn  );
     AgentUndo* Agent_clone_into_temp                   (Agent* self);
 
-    double  Agent_average_reward                       ( Agent* self, u32 cycles);
+    double  Agent_average_reward                       ( Agent* self);
 
     u32  Agent_generate_random_action                  ( Agent* self);
     u32  Agent_maximum_action                          ( Agent* self  );
