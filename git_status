@@ -1,0 +1,22 @@
+#//////////////////////////////////////////////////////////////////
+# AUTHOR:   Robert Morouney <069001422>
+# EMAIL:    robert@morouney.com 
+# FILE:     git_status
+# CREATED:  2016-04-23 03:35:07
+# MODIFIED: 2016-04-23 03:35:23
+#//////////////////////////////////////////////////////////////////
+#!/bin/sh
+
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse @{u})
+BASE=$(git merge-base @ @{u})
+
+if [ $LOCAL = $REMOTE ]; then
+    echo "Up-to-date"
+elif [ $LOCAL = $BASE ]; then
+    echo "Need to pull"
+elif [ $REMOTE = $BASE ]; then
+    echo "Need to push"
+else
+    echo "Diverged"
+fi
