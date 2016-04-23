@@ -75,11 +75,11 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     return bv_peek_uint32(symbols);
 }
 
-  double Agent_average_reward ( Agent * self)
+  double Agent_average_reward ( Agent * self, u32 cycles)
 {
     double average = 0.0;
     if ( self -> age > 0 )
-        average = ( self -> total_reward ) / ( self -> age );
+        average = ( self -> total_reward ) / ( cycles );
     return average;
 }
 
