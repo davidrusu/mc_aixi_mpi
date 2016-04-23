@@ -31,7 +31,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     self -> horizon = 6;
 
     TRACE("Building context tree for Agent", "agent");
-    self->context_tree = ctw_create(4);
+    self->context_tree = ctw_create(10);
 
     return self;
 }
@@ -156,7 +156,6 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
 
    self->total_reward += tuple->first;
    self->last_update = percept_update;
-
    return tuple;
 }
 
@@ -172,7 +171,6 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
   void Agent_model_revert(Agent * self, AgentUndo* undo) {
     while(Agent_history_size(self) > undo->history_size)  {
         if(self->last_update == percept_update){
-
             ctw_revert(self->context_tree, 32);
             self->last_update = action_update;
         } else {
@@ -180,7 +178,10 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
             self->last_update = percept_update;
         }
     }
-
+    if (Agent_history_size(self) != undo->history_size) {
+      printf("hist size should be equal %u %u\n", Agent_history_size(self), undo->history_size);
+      exit(1034109);
+    }
     self->age = undo->age;
     self->total_reward = undo->total_reward;
     self->last_update = undo->last_update;
@@ -243,7 +244,6 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
         Agent_model_revert(self, undo);
     }
 
-
     u32 best_action = Agent_generate_random_action(self);
     double best_mean = -1;
 
@@ -253,9 +253,9 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
         MonteNode* searchNode = dict_find(node->actions, action);
 
         if(searchNode != NULL) {
-
-            double mean = searchNode->mean + ((float)rand()/(float)(RAND_MAX/1) );
-
+	  
+            double mean = searchNode->mean + ((float)rand()/(float)(RAND_MAX)) * 0.00001;
+	   
             if(mean > best_mean) {
                 best_mean = mean;
                 best_action = action;
