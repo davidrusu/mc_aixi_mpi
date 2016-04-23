@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     1d_maze.c
 // CREATED:  2016-04-23 01:54:24
-// MODIFIED: 2016-04-23 03:15:21
+// MODIFIED: 2016-04-23 03:37:42
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -119,6 +119,6 @@ u32 * generate_boards(void) {
     return tmp;
 }
 
-        
+void bit_set ( u08 bit , u32 * bstring ){     bstring =         
 u32 __rand_d (u08 start , u08 finish ){     return rand()%(start-finish)+start; } 
 double __rp() { return (double) rand() / (double)RAND_MAX; }

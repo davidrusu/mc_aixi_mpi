@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 22:14:41
+// MODIFIED: 2016-04-23 03:39:52
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -77,7 +77,7 @@ u32Tuple* perform_action ( void * _self, u32 action_t )
     
     u32 observation_t , reward_t;
     
-    if (__rp() < probability(self) ){
+    if (__rp() > probability(self) ){
         observation_t = 1;
         reward_t = ( action_t == 0 ) ? 0 : 1;
     } else {
