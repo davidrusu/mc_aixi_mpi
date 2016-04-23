@@ -111,7 +111,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         long ticks_taken = time(NULL) - cycle_start;
 
 	if (cycle % 5 == 0) {
-	  printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
+	  printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observe.", "Reward", "Action", "Explored", "Exp. Rate", "Tot. Reward", "Avg Reward", "Time", "Model Size");
 	}
         // Just a large padded statement about what is going on in the world as we step through
         printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12u%-12f%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, "N/A");
