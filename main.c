@@ -72,7 +72,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         int agent_age = agent->age;
 
         if(terminate_check && agent_age > options->terminate_age) {
-            TRACE("Interaction looked broken; terminate age exceeded.", "main");
+            TRACE("Interaction looked broken; terminate age exceeded.\n", "main");
             break;
         }
 
@@ -139,10 +139,12 @@ int main() {
     // TODO: Create an environment...
     struct Coin_Flip* environment = new (Coin_Flip, 0.7f);
 
-    TRACE("Creating agent...\n", "desu");
+    TRACE("Creating agent... please be patient\n", "desu");
 
     // TODO: Create the agent
+    TRACE("allocate agent\n", "main");
     Agent* agent = malloc(sizeof(Agent));
+    TRACE("init agent\n", "main");
     agent = Agent_init(agent, environment, appOptions->learning_period);
 
     // TODO: Line #443: Do we need to copy some of the options into here?
