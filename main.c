@@ -53,7 +53,7 @@ float _random_0_1() {
     return (float)rand()/(float)(RAND_MAX/1);
 }
 void _interaction_loop(Agent* agent, struct Environment* environment, app_options* options) {
-    printf("MC AIXI training warming up...");
+    printf("MC AIXI training warming up...\n");
     srand(1337);
 
     bool explore =  options->exploration > 0;
@@ -99,10 +99,8 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
             action = Agent_generate_random_action(agent);
         }
         else {
-            printf("Agent is trying to choose best action...\n");
-            action = Agent_search(agent);
-            TRACE("Success w/ best action\n", "desu");\
-        }
+	  action = Agent_search(agent);
+	}
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
         perform_action(environment, action);
@@ -112,8 +110,11 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
         long ticks_taken = time(NULL) - cycle_start;
 
+	if (cycle % 5 == 0) {
+	  printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
+	}
         // Just a large padded statement about what is going on in the world as we step through
-        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12s%-12s%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, "N/A", "N/A", ticks_taken, "N/A");
+        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12u%-12f%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, "N/A");
 
         if(explore) {
             options->exploration *= options->explore_decay;

@@ -196,8 +196,7 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
 
   void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
-    TRACE("ModelUpdatePercept\n", "X");
-
+    
     // Are we still learning?
     if((self->learning_period > 0 ) && (self->age > self->learning_period)) {
        ctw_update_history(self->context_tree, symbols);
