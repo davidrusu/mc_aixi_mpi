@@ -147,7 +147,7 @@ void bv_clear(BitVector *bv) {
 
 void bv_print(BitVector *bv) {
   printf("Size: %llu\n", bv->size);
-  if (bv->size > 100) {
+  if (bv->size > 400) {
     return;
   }
   uint64_t i;

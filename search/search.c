@@ -66,11 +66,11 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
         if(node == NULL  || node->visits == 0)  {
             priority = MONTE_UNEXPLORED_BIAS;
         } else {
-          priority = node->mean + (explore_bias * sqrt(exploration_numerator / node->visits));
+          priority = node->mean - (explore_bias * sqrt(exploration_numerator / node->visits));
         }
 	
 	//printf("selecting action b_p %f, p %f a %u \n", best_priority, priority, action);
-        if(priority > (best_priority - ((float)rand()/(float)(RAND_MAX/1) - 0.5) * 0.001)) {
+        if(priority > (best_priority + ((float)rand()/(float)(RAND_MAX/1) - 0.5) * 0.001)) {
             best_action = action;
             best_priority = priority;
         }

@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
       bv_free(v);
     }
     printf("Prediction:\n");
-    BitVector *prediction = ctw_gen_random_symbols(tree, 8 * 100);
+    BitVector *prediction = ctw_gen_random_symbols_and_update(tree, 8 * 100);
     bv_print_ascii(prediction);
     bv_free(prediction);
     

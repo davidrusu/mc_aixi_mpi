@@ -31,7 +31,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     self -> horizon = 6;
 
     TRACE("Building context tree for Agent", "agent");
-    self->context_tree = ctw_create(10);
+    self->context_tree = ctw_create(196);
 
     return self;
 }
@@ -46,7 +46,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     return self->context_tree->history->size;
 }
 
-  AgentUndo* Agent_clone_into_temp(Agent* self) {
+AgentUndo* Agent_clone_into_temp(Agent* self) {
     AgentUndo* undo = (AgentUndo *) malloc(sizeof(AgentUndo));
     undo->age = self->age;
     undo->total_reward = self->total_reward;
@@ -55,7 +55,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     return undo;
 }
 
-  BitVector * Agent_encode_action(Agent* self, u32 action) {
+BitVector * Agent_encode_action(Agent* self, u32 action) {
    BitVector* vector = bv_from_uint32(action);
    ctw_update_history(self->context_tree, vector);
    self->age++;
@@ -75,7 +75,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     return bv_peek_uint32(symbols);
 }
 
-  double Agent_average_reward ( Agent * self)
+double Agent_average_reward ( Agent * self)
 {
     double average = 0.0;
     if ( self -> age > 0 )
@@ -107,7 +107,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
    return ctw_size(self->context_tree);
 }
 
-  void Agent_model_update_action ( Agent* self, u32 action) {
+void Agent_model_update_action ( Agent* self, u32 action) {
    BitVector* action_symbols = Agent_encode_action(self, action);
    ctw_update_history(self->context_tree, action_symbols);
    self->age++;
@@ -152,6 +152,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 
 u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
    BitVector* random = ctw_gen_random_symbols_and_update(self->context_tree, 64);
+   //bv_print(random);
    u32Tuple* tuple = Agent_decode_percept(self, random);
 
    self->total_reward += tuple->first;
@@ -192,6 +193,8 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     BitVector* a = bv_from_uint32(observation);
     BitVector* b = bv_from_uint32(reward);
     bv_append(a, b);
+    printf("percept encoding:\n");
+    bv_print(a);
     return a;
 }
 
@@ -200,8 +203,11 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     
     // Are we still learning?
     if((self->learning_period > 0 ) && (self->age > self->learning_period)) {
+      printf("not learning any more\n");
        ctw_update_history(self->context_tree, symbols);
     } else {
+      printf("updating with:\n");
+      bv_print(symbols);
        ctw_update_vector(self->context_tree, symbols);
     }
 
