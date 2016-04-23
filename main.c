@@ -114,7 +114,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 	}
         // Just a large padded statement about what is going on in the world as we step through
         //printf("%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
-        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12u%-12f%-12lu%-12u\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, ctw_size(agent->context_tree));
+        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12f%-12f%-12lu%-12u\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, ctw_size(agent->context_tree));
 
         if(explore) {
             options->exploration *= options->explore_decay;
