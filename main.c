@@ -113,7 +113,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         long ticks_taken = time(NULL) - cycle_start;
 
         // Just a large padded statement about what is going on in the world as we step through
-        printf("%-12d%-12d%-12d%-12d%-12d%-12f%-12s%-12s%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, "N/A", "N/A", ticks_taken, "N/A");
+        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12s%-12s%-12lu%-12s\n", cycle, observation, reward, action, explored, options->exploration, "N/A", "N/A", ticks_taken, "N/A");
 
         if(explore) {
             options->exploration *= options->explore_decay;
