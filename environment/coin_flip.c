@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     coin_flip.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 15:42:25
+// MODIFIED: 2016-04-22 21:31:44
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -27,20 +27,20 @@ void * CF_init ( void * _self, va_list * args )
     
     self -> _ . num_actions             = 2;
     
-    self -> _ . _valid_actions          = malloc ( Number_States * sizeof ( u32 ) );
-    self -> _ . _valid_actions[0]       = Tails;
-    self -> _ . _valid_actions[1]       = Heads;
+    self -> _ . _valid_actions          = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_actions[0]       = 0;
+    self -> _ . _valid_actions[1]       = 1;
        
-    self -> _ . _valid_observations     = malloc ( Number_States * sizeof ( u32 ) );
-    self -> _ . _valid_observations[0]  = Tails;
-    self -> _ . _valid_observations[1]  = Heads;
+    self -> _ . _valid_observations     = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_observations[0]  = 0;
+    self -> _ . _valid_observations[1]  = 1;
    
-    self -> _ . _valid_rewards          = malloc ( Number_States * sizeof ( u32 ) );
-    self -> _ . _valid_rewards[0]       = Loss;
-    self -> _ . _valid_rewards[1]       = Win;
+    self -> _ . _valid_rewards          = malloc ( 2 * sizeof ( u32 ) );
+    self -> _ . _valid_rewards[0]       = 0;
+    self -> _ . _valid_rewards[1]       = 1;
    
    double probability_t = va_arg ( * args , double );
-   if ( probability_t <= 0.0001 || probability_t >= 1.0001 ) probability_t = Default_Probability;
+   if ( probability_t <= 0.0001 || probability_t >= 1.0001 ) probability_t = 0.7;
     
     #ifdef DEBUG
         TRACE ( "Probability = %d\n", probability_t );
@@ -78,11 +78,11 @@ static u32Tuple* perform_action ( void * _self, u32 action_t )
     u32 observation_t , reward_t;
     
     if (__rp() < probability(self) ){
-        observation_t = Heads;
-        reward_t = ( action_t == Tails ) ? Loss : Win;
+        observation_t = 1;
+        reward_t = ( action_t == 0 ) ? 0 : 1;
     } else {
-        observation_t = Tails;
-        reward_t = ( action_t == Tails ) ? Win : Loss;
+        observation_t = 0;
+        reward_t = ( action_t == 0 ) ? 1 : 0;
     }
     
     #ifdef DEBUG

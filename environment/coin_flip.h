@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     coin_flip.h
 // CREATED:  2016-04-21 16:23:23
-// MODIFIED: 2016-04-22 15:31:29
+// MODIFIED: 2016-04-22 21:28:37
 ////////////////////////////////////////////////////////////////////
 
 #ifndef COIN_FLIP_H
@@ -20,12 +20,12 @@
     
 
     //GAME CONFIG VARS///////////////////////////////////////////////////
-    const double  Default_Probability = 7e-1;
-    const u32     Tails               = HEADS_VAL;
-    const u32     Heads               = TAILS_VAL;
-    const u32     Loss                = TAILS_VAL;
-    const u32     Win                 = HEADS_VAL;
-    const u08     Number_States       = 0x00000002;
+    //const double  Default_Probability = 7e-1;
+    //const u32     Tails               = HEADS_VAL;
+    //const u32     Heads               = TAILS_VAL;
+    //const u32     Loss                = TAILS_VAL;
+    //const u32     Win                 = HEADS_VAL;
+    //const u08     Number_States       = 0x00000002;
 
     double __rp();
     static u32Tuple * perform_action ( void * _self, u32 action_t );
