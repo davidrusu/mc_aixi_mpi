@@ -10,7 +10,6 @@
 #include "environment/coin_flip.h"
 #include "agent/agent.h"
 #include "_utils/macros.h"
-#include <unistd.h>
 
 /*
  * MC AIXI - C port of PyAIXI w/ MPI
@@ -40,7 +39,7 @@ app_options* _make_default_options() {
     options->environment = 0;
     options->exploration = 0.001f;
     options->explore_decay = 1.0f;
-    options->learning_period = 30;
+    options->learning_period = 0;
     options->mc_simulations = 300;
     options->profile = false;
     options->terminate_age = 0;
@@ -49,10 +48,10 @@ app_options* _make_default_options() {
     return options;
 }
 
-
 float _random_0_1() {
     return (float)rand()/(float)(RAND_MAX/1);
 }
+
 void _interaction_loop(Agent* agent, struct Environment* environment, app_options* options) {
     printf("MC AIXI training warming up...\n");
     srand(1337);
@@ -69,8 +68,6 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
 
     while(!isEnvironmentFinished) {
-      printf("cylce-------\n");
-      printf("age %u\n", agent->age);
         int agent_age = agent->age;
 
         if(terminate_check && agent_age > options->terminate_age) {
@@ -88,19 +85,11 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
             explore = false;
         }
 
-	
-	printf("age %u\n", agent->age);
         Agent_model_update_percept(agent, observation, reward);
-	printf("just updated, prediction:\n");
-	BitVector *bv = ctw_gen_random_symbols(agent->context_tree, 64);
-	bv_print(bv);
-	bv_free(bv);
-	bv_print(agent->context_tree->history);
-	sleep(1);
+
         bool explored =  false;
 
-	printf("age %u\n", agent->age);
-        u32 action = 0;
+	u32 action = 0;
 
         if (explore && _random_0_1() < options->exploration) {
             explored =  true;
@@ -110,15 +99,10 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 	    action = Agent_search(agent);
 	}
 
-	printf("search age %u\n", agent->age);
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
         perform_action(environment, action);
-	
-	printf("age %u\n", agent->age);
 
         Agent_model_update_action(agent, action);
-
-	printf("age %u\n", agent->age);
 	
         long ticks_taken = time(NULL) - cycle_start;
 
@@ -138,8 +122,6 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         // See beginning of this loop in PyAIXI.. need to call some kind of environment_is_finished(environment)
         // or something like that
         isEnvironmentFinished = environment->_is_finished;
-	
-	printf("age %u\n", agent->age);
     }
 
 }
@@ -153,7 +135,7 @@ int main() {
     TRACE("Creating environment...\n", "desu");
 
     // TODO: Create an environment...
-    struct Coin_Flip* environment = new (Coin_Flip, 0.5f);
+    struct Coin_Flip* environment = new (Coin_Flip, 0.6f);
 
     TRACE("Creating agent... please be patient\n", "desu");
 

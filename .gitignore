@@ -52,3 +52,5 @@ predict/tree.dat
 predict/tree.dat
 
 predict/repl
+
+*.o

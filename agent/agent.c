@@ -31,7 +31,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     self -> horizon = 6;
 
     TRACE("Building context tree for Agent", "agent");
-    self->context_tree = ctw_create(196);
+    self->context_tree = ctw_create(62);
 
     return self;
 }
@@ -152,7 +152,6 @@ void Agent_model_update_action ( Agent* self, u32 action) {
 
 u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
    BitVector* random = ctw_gen_random_symbols_and_update(self->context_tree, 64);
-   //bv_print(random);
    u32Tuple* tuple = Agent_decode_percept(self, random);
 
    self->total_reward += tuple->first;
@@ -193,8 +192,6 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     BitVector* a = bv_from_uint32(observation);
     BitVector* b = bv_from_uint32(reward);
     bv_append(a, b);
-    printf("percept encoding:\n");
-    bv_print(a);
     return a;
 }
 
@@ -206,8 +203,6 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
       printf("not learning any more\n");
        ctw_update_history(self->context_tree, symbols);
     } else {
-      printf("updating with:\n");
-      bv_print(symbols);
        ctw_update_vector(self->context_tree, symbols);
     }
 
