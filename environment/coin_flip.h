@@ -28,7 +28,7 @@
     //const u08     Number_States       = 0x00000002;
 
     double __rp();
-    static u32Tuple * perform_action ( void * _self, u32 action_t );
+    u32Tuple * perform_action ( void * _self, u32 action_t );
     static void CF_print(void * _self);
 
 #endif

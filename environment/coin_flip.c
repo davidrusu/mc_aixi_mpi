@@ -58,7 +58,7 @@ void * CF_init ( void * _self, va_list * args )
 
 double __rp() { return (double) rand() / (double)RAND_MAX; }
 
-static u32Tuple* perform_action ( void * _self, u32 action_t )
+u32Tuple* perform_action ( void * _self, u32 action_t )
 {
     struct Coin_Flip * self = _self;
 
