@@ -18,6 +18,7 @@
 #include "../agent/agent.h"
 #include "../environment/environment.r"
 #include "../_utils/types.h"
+#include "../_utils/macros.h"
 
 #define ARC4RANDOM_MAX      0x100000000
 

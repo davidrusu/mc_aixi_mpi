@@ -151,7 +151,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
 }
 
 u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
-   BitVector* random = ctw_gen_random_symbols_and_update(self->context_tree, 32);
+   BitVector* random = ctw_gen_random_symbols_and_update(self->context_tree, 64);
    u32Tuple* tuple = Agent_decode_percept(self, random);
 
    self->total_reward += tuple->first;
@@ -172,6 +172,7 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
   void Agent_model_revert(Agent * self, AgentUndo* undo) {
     while(Agent_history_size(self) > undo->history_size)  {
         if(self->last_update == percept_update){
+
             ctw_revert(self->context_tree, 32);
             self->last_update = action_update;
         } else {
@@ -195,6 +196,7 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
 
   void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
+    TRACE("ModelUpdatePercept\n", "X");
 
     // Are we still learning?
     if((self->learning_period > 0 ) && (self->age > self->learning_period)) {
@@ -234,12 +236,14 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     AgentUndo* undo = Agent_clone_into_temp(self);
 
     MonteNode* node = monte_create_tree(NODE_TYPE_DECISION);
+
     u32 i = 0;
     // 300 sims
     for(i = 0; i < 300;i++ ) {
         monte_sample(node, self, self->horizon);
         Agent_model_revert(self, undo);
     }
+
 
     u32 best_action = Agent_generate_random_action(self);
     double best_mean = -1;

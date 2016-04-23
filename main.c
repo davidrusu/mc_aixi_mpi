@@ -101,6 +101,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
         else {
             printf("Agent is trying to choose best action...\n");
             action = Agent_search(agent);
+            TRACE("Success w/ best action\n", "desu");\
         }
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
