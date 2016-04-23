@@ -85,7 +85,4 @@
 
     // % Call function and exit if error occured
     #define CALL_AND_EXIT_ON_ERR(function) CALL_AND_CHECK(function, 0)
-
-
-
 #endif
