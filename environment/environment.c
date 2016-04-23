@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-22 20:38:55
+// MODIFIED: 2016-04-22 21:18:57
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -252,7 +252,7 @@ u32 LG2 ( u32 x )
     
     register u32 ret, t, tt; // temp var2
     
-    if (tt = x >> 16)
+    if ((tt = x >> 16))
         ret = (t = tt >> 8) ? 24 + LogTable256[t] : 16 + LogTable256[tt];
     else
         ret = (t = x >> 8) ? 8 + LogTable256[t] : LogTable256[x];
