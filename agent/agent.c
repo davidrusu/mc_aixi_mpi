@@ -245,17 +245,14 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     }
 
     u32 best_action = Agent_generate_random_action(self);
-    double best_mean = -1;
+    double best_mean = (double)((u32)-1);
 
     for(i = 0; i < self->environment->num_actions; i++) {
         u32 action =  self->environment->_valid_actions[i];
-
         MonteNode* searchNode = dict_find(node->actions, action);
 
         if(searchNode != NULL) {
-	  
             double mean = searchNode->mean + ((float)rand()/(float)(RAND_MAX)) * 0.00001;
-	   
             if(mean > best_mean) {
                 best_mean = mean;
                 best_action = action;
