@@ -209,7 +209,7 @@ u32  maximum_reward ( void * _self )
     foreach ( u32 const * x , self->_valid_rewards)
     { 
         idx++;
-        TRACE ( "%d" , *x );
+        TRACE ( "%d\n" , *x );
     }
     
     return self->_valid_rewards[idx];
