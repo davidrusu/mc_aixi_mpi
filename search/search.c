@@ -50,7 +50,7 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
     // 2.0f is hard-coded into the application
     float exploration_numerator = (float) (2.0f* log((double) tree->visits));
 
-    printf("%f", exploration_numerator);
+//    printf("%f", exploration_numerator);
 
     // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
     u32 best_action = 0;
