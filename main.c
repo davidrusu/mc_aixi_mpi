@@ -211,8 +211,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
         long cycle_start = time(NULL);
 
-        // TODO: Implement lines 120 and 121 (properly, compile?
-        u32 observation = environment->_observation;
+	u32 observation = environment->_observation;
         u32 reward = environment->_reward;
 
         if(options->learning_period > 0 && cycle > options->learning_period) {
@@ -223,15 +222,14 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
         bool explored =  false;
 
-    	u32 action = 0;
-
+    	u32 action;
         if (explore && _random_0_1() < options->exploration) {
-            explored =  true;
-            printf("Agent is trying action at random...\n");
-            action = Agent_generate_random_action(agent);
-        } else {
+	    explored =  true;
+	    printf("Agent is trying action at random...\n");
+	    action = Agent_generate_random_action(agent);
+	} else {
 	    action = Agent_search(agent);
-    	}
+	}
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
         perform_action(environment, action);
@@ -244,7 +242,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 	  printf("%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n", "Cycle", "Observe.", "Reward", "Action", "Explored", "Exp. Rate", "Tot. Reward", "Avg Reward", "Time", "Model Size");
     }   // Just a large padded statement about what is going on in the world as we step through
         //printf("%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s\n", "Cycle", "Observation", "Reward", "Action", "Explored", "Explore Rate", "Total Reward", "Average Reward", "Time", "Model Size");
-        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12f%-12f%-12lu%-12u\n", cycle, observation, reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, ctw_size(agent->context_tree));
+        printf("%-12d%-12u%-12u%-12u%-12d%-12f%-12f%-12f%-12lu%-12u\n", cycle, environment->_observation, environment->_reward, action, explored, options->exploration, agent->total_reward, Agent_average_reward(agent), ticks_taken, ctw_size(agent->context_tree));
 
         if(explore) {
             options->exploration *= options->explore_decay;
@@ -269,7 +267,7 @@ int main(int argc, const char* argv[]) {
     TRACE("Creating environment...\n", "desu");
 
     // TODO: Create an environment...
-    struct Coin_Flip* environment = new (Coin_Flip, 0.6f);
+    struct Coin_Flip* environment = new (Coin_Flip, 0.7f);
 
     TRACE("Creating agent... please be patient\n", "desu");
 

@@ -28,7 +28,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  )
     self -> last_update = action_update;
     self -> total_reward = 0.0;
     self -> horizon = 6;
-    u32 depth = 10;
+    u32 depth = 100;
 
     TRACE("Building context tree for Agent", "agent");
     self->context_tree = ctw_create(depth);
@@ -88,9 +88,8 @@ double Agent_average_reward ( Agent * self)
     return average;
 }
 
-  u32 Agent_generate_random_action ( Agent * self)
+u32 Agent_generate_random_action ( Agent * self)
 {
-    // TODO: Replace this with the NUMBER of valid actions
     int actionIndex = rand() % self->environment->num_actions;
     return self->environment->_valid_actions[actionIndex];
 }
@@ -167,7 +166,7 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     return ctw_predict_vector(self->context_tree, symbols);
 }
 
-  u32 Agent_maximum_bits_needed(Agent * self) {
+u32 Agent_maximum_bits_needed(Agent * self) {
     return 32; // this is stupid
 }
 

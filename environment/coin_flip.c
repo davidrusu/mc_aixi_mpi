@@ -79,11 +79,11 @@ u32Tuple* perform_action ( void * _self, u32 action_t )
     
     if (__rp() > probability(self) ){
         observation_t = 1;
-        reward_t = ( action_t == 0 ) ? 0 : 1;
     } else {
         observation_t = 0;
-        reward_t = ( action_t == 0 ) ? 1 : 0;
     }
+    
+    reward_t = ( action_t == observation_t ) ? 1 : 0;
     
     #ifdef DEBUG
         TRACE ( "Observation = %d Reward = %d\n", observation_t, reward_t );
