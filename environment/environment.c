@@ -3,7 +3,7 @@
 // EMAIL:    robert@morouney.com
 // FILE:     environment:.c
 // CREATED:  2016-04-21 12:03:42
-// MODIFIED: 2016-04-23 04:34:09
+// MODIFIED: 2016-04-23 22:19:14
 ////////////////////////////////////////////////////////////////////
 
 #include <assert.h>
@@ -19,7 +19,7 @@
 // def __init__():
 static void * Environment_init ( void * _self, va_list * args )
 {
-    struct Environment * self = ( struct Environment * ) _self;
+    struct Environment * self = _self;
 
     va_copy ( self -> _options, *args );
     self -> _is_finished   = 0x00;
