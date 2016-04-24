@@ -285,7 +285,9 @@ int main(int argc, const char* argv[]) {
     if(appOptions->profile) {
         printf("Profiling is not currently supported. Ignoring.\n");
     }
-
+    
+#ifdef USE_MPI
     //    _interaction_loop(agent, environment, appOptions);
     mpi_main(agent, environment, appOptions, argc, argv);
+#endif
 }
