@@ -12,7 +12,7 @@
 #include "_utils/macros.h"
 #include "mpi.h"
 
-#define CTW_DATA_FILE "/scratch/ctw.dat"
+#define CTW_DATA_FILE "/scratch/drusu/ctw.dat"
 /*
  * MC AIXI - C port of PyAIXI w/ MPI
  * This port contains an additional implementation of MC AIXI on top of the PyAIXI platform, which was only
@@ -54,7 +54,7 @@ float _random_0_1() {
     return (float)rand()/(float)(RAND_MAX/1);
 }
 
-void mpi_main(Agent* agent, struct Environment* environment, app_options* options) {
+void mpi_main(Agent* agent, struct Environment* environment, app_options* options, int argc, const char* argv[]) {
   int rank, P;
 
   if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
@@ -66,8 +66,10 @@ void mpi_main(Agent* agent, struct Environment* environment, app_options* option
   MPI_Comm_size(MPI_COMM_WORLD, &P);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  if (rank == 1) {
-    agent_proc(P, agent, environment, options);
+  if (rank == 0) {
+     printf("%d\n", agent->context_tree);
+    printf("desu\n");
+      agent_proc(P, agent, environment, options);
   } else {
     search_proc(rank, P, agent, environment, options);
   }
@@ -113,19 +115,18 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
 
     u32 best_action = 0;
     double best_mean = -1;
-
+    u32 action;
     if (explore && _random_0_1() < options->exploration) {
       explored =  true;
       printf("Agent is trying action at random...\n");
       action = Agent_generate_random_action(agent);
     } else {
-      ctw_save(Agent->context_tree, CTW_DATA_FILE);
+      ctw_save(agent->context_tree, CTW_DATA_FILE);
       int i;
-      for (i = 0; i < P; i++) {
+      for (i = 1; i < P; i++) {
 	int data = 1;
 	MPI_Send(&data, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 
-	u32 action;
 	double mean;
 	MPI_Recv(&action, 1, MPI_INT, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	MPI_Recv(&mean, 1, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -211,7 +212,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
         bool explored =  false;
 
-	u32 action = 0;
+    	u32 action = 0;
 
         if (explore && _random_0_1() < options->exploration) {
             explored =  true;
@@ -219,7 +220,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
             action = Agent_generate_random_action(agent);
         } else {
 	    action = Agent_search(agent);
-	}
+    	}
 
         // TODO: Line 153 to 156 - Perform agent action and update w/ action
         perform_action(environment, action);
@@ -248,7 +249,7 @@ void _interaction_loop(Agent* agent, struct Environment* environment, app_option
 
 }
 
-int main() {
+int main(int argc, const char* argv[]) {
     // TODO: Later, maybe support command line arguments...
     app_options* appOptions = _make_default_options();
 
@@ -275,5 +276,5 @@ int main() {
     }
 
     //    _interaction_loop(agent, environment, appOptions);
-    mpi_main(agent, environment, appOptions);
+    mpi_main(agent, environment, appOptions, argc, argv);
 }

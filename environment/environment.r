@@ -9,7 +9,7 @@
 #ifndef ENV_R
     #define ENV_R
     #include "../_utils/types.h"
-
+    #include <stdarg.h>
     // Class Environment:
     struct Environment
     {

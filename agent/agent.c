@@ -97,13 +97,11 @@ double Agent_average_reward ( Agent * self)
 
   u32 Agent_maximum_action ( Agent* self)
 {
-    // TODO: wtf???
-    return maximum_reward(self->environment);
+    return maximum_action(self->environment);
 }
 
   u32 Agent_maximum_reward ( Agent* self)
 {
-    // TODO: wtff???
     return maximum_reward(self->environment);
 }
 
@@ -194,13 +192,14 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
 }
 
   BitVector * Agent_encode_percept ( Agent * self, u32 observation, u32 reward) {
-    BitVector* a = bv_from_uint32(observation);
-    BitVector* b = bv_from_uint32(reward);
+    BitVector* a = bv_from_uint32(reward);
+    BitVector* b = bv_from_uint32(observation);
     bv_append(a, b);
+    bv_free(b);
     return a;
 }
 
-  void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
+void Agent_model_update_percept ( Agent * self, u32 observation, u32 reward ) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
     
     // Are we still learning?
@@ -216,12 +215,12 @@ u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
     return;
 }
 
-  double Agent_percept_probability(Agent* self, u32 observation, u32 reward) {
+double Agent_percept_probability(Agent* self, u32 observation, u32 reward) {
     BitVector* symbols = Agent_encode_percept(self, observation, reward);
     return ctw_predict_vector(self->context_tree, symbols);
 }
 
-  double Agent_playout(Agent* self, u32 horizon) {
+double Agent_playout(Agent* self, u32 horizon) {
     double total_reward = 0;
     u32 i = 0;
 
