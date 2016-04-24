@@ -10,7 +10,10 @@
 #include "environment/coin_flip.h"
 #include "agent/agent.h"
 #include "_utils/macros.h"
-#include "mpi.h"
+
+#ifdef USE_MPI
+    #include "mpi.h"
+#endif
 
 #define CTW_DATA_FILE "/scratch/drusu/ctw.dat"
 /*
@@ -54,6 +57,7 @@ float _random_0_1() {
     return (float)rand()/(float)(RAND_MAX/1);
 }
 
+#ifdef USE_MPI
 void mpi_main(Agent* agent, struct Environment* environment, app_options* options, int argc, const char* argv[]) {
   int rank, P;
 
@@ -76,7 +80,7 @@ void mpi_main(Agent* agent, struct Environment* environment, app_options* option
 
   MPI_Finalize();
 }
-
+#endif
 void agent_proc(int P, Agent* agent, struct Environment* environment, app_options* options) {
   printf("MC AIXI training warming up...\n");
   srand(1337);
@@ -125,11 +129,14 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
       int i;
       for (i = 1; i < P; i++) {
 	int data = 1;
+#ifdef USE_MPI
 	MPI_Send(&data, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
-
+#endif
 	double mean;
+#ifdef USE_MPI
 	MPI_Recv(&action, 1, MPI_INT, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	MPI_Recv(&mean, 1, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+#endif
 	if (mean > best_mean) {
 	  best_action = action;
 	  best_mean = mean;
@@ -166,12 +173,16 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
 void search_proc(int rank, int P, Agent* agent, struct Environment* environment, app_options* options) {
   for (;;) {
     int data;
+#ifdef USE_MPI
     MPI_Recv(&data, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+#endif
     ctw_load(agent->context_tree, CTW_DATA_FILE);
     double mean;
     int action = Agent_search_mean(agent, &mean);
+#ifdef USE_MPI
     MPI_Send(&action, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
     MPI_Send(&mean, 1, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD);
+#endif
   }
 }
 
