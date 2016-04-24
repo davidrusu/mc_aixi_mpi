@@ -3,13 +3,22 @@
 # EMAIL:    robert@morouney.com 
 # FILE:     Makefile_2
 # CREATED:  2016-04-22 18:13:19
-# MODIFIED: 2016-04-22 21:14:01
+# MODIFIED: 2016-04-23 23:16:33
 #//////////////////////////////////////////////////////////////////
 
 CC = gcc
 CFLAGS = -lm -g -std=c99 -Wall
 OUT_NAME = main_aixi
 default: main_aixi
+
+MPI_DEBUG: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
+	$(CC) $(CFLAGS) -DDEBUG -DUSE_MPI -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
+
+DEBUG: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
+	$(CC) $(CFLAGS) -DDEBUG -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
+
+MPI: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
+	$(CC) $(CFLAGS) -DUSE_MPI -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
 
 main_aixi: coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
 	$(CC) $(CFLAGS) -o $(OUT_NAME) coin_flip.o environment.o class.o agent.o context_tree.o context_tree_node.o ctw_list.o dict.o search.o bit_vector.o main.o
