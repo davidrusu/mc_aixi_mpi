@@ -22,7 +22,7 @@
 
 #define ARC4RANDOM_MAX      0x100000000
 
-#define MONTE_UNEXPLORED_BIAS 1000000000.0f
+#define MONTE_UNEXPLORED_BIAS 100000000000.0f
 
 // pyaixi: __init__
 MonteNode* monte_create_tree(u32 nodeType) {
@@ -55,7 +55,7 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
     // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
     u32 best_action = 0;
     double best_priority = -FLT_MAX;
-
+    //    printf("b p: %f\n", best_priority);
     u32 i = 0;
     for(i = 0; i < agent->environment->num_actions; i++) {
         u32 action = agent->environment->_valid_actions[i];
@@ -69,16 +69,17 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
           priority = node->mean - (explore_bias * sqrt(exploration_numerator / node->visits));
         }
 	
+	//	printf("b p: %f %f\n", priority, best_priority);
 	//printf("selecting action b_p %f, p %f a %u \n", best_priority, priority, action);
-        if(priority > (best_priority + ((float)rand()/(float)(RAND_MAX/1) - 0.5) * 0.001)) {
+        if(priority > (best_priority + ((float)rand()/(float)(RAND_MAX)) * 0.001)) {
             best_action = action;
             best_priority = priority;
         }
 
     }
+    //    printf("b p: %f\n", best_priority);
     return best_action;
 }
-
 
 // pyaixi: sample(agent, horizon)
 // notes: we require some more work here
@@ -90,10 +91,11 @@ float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
         return reward;
     } else if(tree->type == NODE_TYPE_CHANCE) {
         u32Tuple* tuple = Agent_generate_percept_and_update(agent);
-
+	
         u32 observation = tuple->first;
         u32 random_reward = tuple->second;
-	//	printf("gen reward %u\n", random_reward);
+	//	printf("tuple %u %u\n", observation, random_reward);
+	
         bool notInTreeYet = dict_find(tree->children, observation) == NULL;
 	
         if(notInTreeYet) {

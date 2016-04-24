@@ -53,4 +53,7 @@ void bv_print_ascii(BitVector *);
 void bv_save(BitVector *, FILE *);
 
 void bv_load(BitVector *, FILE *);
+
+BitVector *bv_slice(BitVector *bv, uint64_t start, uint64_t end);
+
 #endif

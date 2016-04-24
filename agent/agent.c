@@ -17,6 +17,7 @@
 #include "agent.h"
 #include "../search/monte_node.h"
 #include "../_utils/macros.h"
+#include <assert.h>
 
 Agent* Agent_init ( Agent* self, void * _env, u32 learn  ) {
     const struct Coin_Flip * env = _env;
@@ -27,7 +28,7 @@ Agent* Agent_init ( Agent* self, void * _env, u32 learn  ) {
     self -> last_update = action_update;
     self -> total_reward = 0.0;
     self -> horizon = 6;
-    u32 depth = 20;
+    u32 depth = 192;
 
     TRACE("Building context tree for Agent", "agent");
     self->context_tree = ctw_create(depth);
@@ -80,11 +81,16 @@ u32Tuple* Agent_decode_percept(Agent* self, BitVector* symbols) {
   // Decode both
   u32 reward = Agent_decode_reward(self, reward_symbols);
   u32 observation = Agent_decode_observation(self, observation_symbols);
-
-  u32Tuple* tuple = malloc(sizeof(u32Tuple));
-  tuple->first = observation;
-  tuple->second = reward;
-
+  u32Tuple* tuple;
+  if (is_valid_reward(self->environment, reward) &&
+      is_valid_observation(self->environment, observation)) {
+    tuple = malloc(sizeof(u32Tuple));
+    tuple->first = observation;
+    tuple->second = reward;
+  } else {
+    tuple = NULL;
+  }
+  
   return tuple;
 }
 
@@ -101,7 +107,7 @@ BitVector * Agent_encode_percept ( Agent * self, u32 observation, u32 reward) {
 }
 
 u32 Agent_generate_action(Agent* self) {
-  //assert(self->last_update == percept_update);
+  assert(self->last_update == percept_update);
   
   BitVector* random = ctw_gen_random_symbols(self->context_tree, 32);
   return Agent_decode_action(self, random);
@@ -109,7 +115,18 @@ u32 Agent_generate_action(Agent* self) {
 
 u32Tuple* Agent_generate_percept(Agent* self) {
   BitVector* random = ctw_gen_random_symbols_and_update(self->context_tree, 64);
-  return Agent_decode_percept(self, random);
+  
+  u32Tuple *percept = Agent_decode_percept(self, random);
+  if (percept == NULL) {
+    percept = malloc(sizeof(u32Tuple));
+    percept->first = rand() % 2; // TODO: hardcoded
+    percept->second = rand() % 2; // TODO: hardcoded
+    ctw_revert(self->context_tree, 64);
+    BitVector* symbols = Agent_encode_percept(self, percept->first, percept->second);
+    ctw_update_vector(self->context_tree, symbols);
+    bv_free(symbols);
+  }
+  return percept;
 }
 
 u32Tuple * Agent_generate_percept_and_update(Agent*  self) {
@@ -207,17 +224,20 @@ void Agent_reset ( Agent* self ) {
 }
 
 u32 Agent_search_mean(Agent* self, double *mean) {
-  // This function was not implemented properly
+  
+  printf("start search\n");
   AgentUndo* undo = Agent_clone_into_temp(self);
 
   MonteNode* node = monte_create_tree(NODE_TYPE_DECISION);
 
+  printf("start sampling\n");
   // 300 sims
-  for(u32 i = 0; i < 300;i++ ) {
+  for(u32 i = 0; i < 50;i++ ) {
     monte_sample(node, self, self->horizon);
     Agent_model_revert(self, undo);
   }
 
+  printf("done sampling\n");
   u32 best_action = Agent_generate_random_action(self);
   double best_mean = -1;
 
@@ -233,7 +253,8 @@ u32 Agent_search_mean(Agent* self, double *mean) {
       }
     }
   }
-  
+
+  printf("done search\n");
   *mean = best_mean;
   return best_action;
 }

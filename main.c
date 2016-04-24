@@ -80,7 +80,7 @@ void mpi_main(Agent* agent, struct Environment* environment, app_options* option
 
   MPI_Finalize();
 }
-#endif
+
 void agent_proc(int P, Agent* agent, struct Environment* environment, app_options* options) {
   printf("MC AIXI training warming up...\n");
   srand(1337);
@@ -129,14 +129,12 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
       int i;
       for (i = 1; i < P; i++) {
 	int data = 1;
-#ifdef USE_MPI
 	MPI_Send(&data, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
-#endif
+      }
+      for (i = 1; i < P; i++) {
 	double mean;
-#ifdef USE_MPI
 	MPI_Recv(&action, 1, MPI_INT, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	MPI_Recv(&mean, 1, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-#endif
 	if (mean > best_mean) {
 	  best_action = action;
 	  best_mean = mean;
@@ -173,19 +171,17 @@ void agent_proc(int P, Agent* agent, struct Environment* environment, app_option
 void search_proc(int rank, int P, Agent* agent, struct Environment* environment, app_options* options) {
   for (;;) {
     int data;
-#ifdef USE_MPI
     MPI_Recv(&data, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-#endif
+
     ctw_load(agent->context_tree, CTW_DATA_FILE);
     double mean;
     int action = Agent_search_mean(agent, &mean);
-#ifdef USE_MPI
+
     MPI_Send(&action, 1, MPI_INT, 0, 2, MPI_COMM_WORLD);
     MPI_Send(&mean, 1, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD);
-#endif
   }
 }
-
+#endif
 void _interaction_loop(Agent* agent, struct Environment* environment, app_options* options) {
     printf("MC AIXI training warming up...\n");
     srand(1337);
@@ -267,7 +263,7 @@ int main(int argc, const char* argv[]) {
     TRACE("Creating environment...\n", "desu");
 
     // TODO: Create an environment...
-    struct Coin_Flip* environment = new (Coin_Flip, 0.7f);
+    struct Coin_Flip* environment = new (Coin_Flip, 0.9f);
 
     TRACE("Creating agent... please be patient\n", "desu");
 
@@ -285,7 +281,7 @@ int main(int argc, const char* argv[]) {
     }
     
 #ifndef USE_MPI
-    _interaction_loop(agent, environment, appOptions);
+    _interaction_loop(agent, (struct Environment *) environment, appOptions);
 #else
     mpi_main(agent, environment, appOptions, argc, argv);
 #endif

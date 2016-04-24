@@ -197,3 +197,12 @@ void bv_load(BitVector *bv, FILE *fp) {
     bv_push(bv, bit);
   }
 }
+
+BitVector *bv_slice(BitVector *bv, uint64_t start, uint64_t end) {
+  // inclusive start, exclusive end
+  BitVector *slice = bv_create();
+  for (uint64_t i = start; i < end; i++) {
+    bv_push(slice, bv_test(bv, i));
+  }
+  return slice;
+}
