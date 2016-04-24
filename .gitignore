@@ -54,3 +54,5 @@ predict/tree.dat
 predict/repl
 
 *.o
+
+main_aixi.serial.debug

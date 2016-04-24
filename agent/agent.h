@@ -38,7 +38,7 @@
 
     // generators
     u32 Agent_generate_action                          (Agent* self);
-    u32 Agent_generate_percept                         (Agent* self );
+    u32Tuple * Agent_generate_percept                         (Agent* self );
     u32Tuple * Agent_generate_percept_and_update              (Agent* self );
 
     u32 Agent_history_size                             (Agent* self );
