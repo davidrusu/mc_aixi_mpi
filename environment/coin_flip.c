@@ -7,113 +7,106 @@
 ////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
-#include <time.h>
 #include <assert.h>
-#include <stdio.h>
-#include <stddef.h>
-#include "../_utils/types.h"
-#include "../_utils/macros.h"
-#include "class.h"
-#include "class.r"
-#include "environment.h"
-#include "environment.r"
 #include "coin_flip.h"
-#include "coin_flip.r"
 
-void * CF_init ( void * _self, va_list * args ) 
-{
-    struct Coin_Flip * self =
-        ((const struct Class *) Environment) -> __init__( _self , args );
-    
-    self -> _ . num_actions             = 2;
-    
-    self -> _ . _valid_actions          = calloc (1, 2 * sizeof ( u32 ) );
-    self -> _ . _valid_actions[0]       = 0;
-    self -> _ . _valid_actions[1]       = 1;
+double rp() { return ((double) rand()) / RAND_MAX; }
+
+Env * env_create(double bias) {
+    Env *env = (Env *) malloc(sizeof(Env));
+    env->num_actions = 2;
+
+    env->valid_actions = (BitVector **) malloc(sizeof(BitVector **) * 2);
+    env->valid_actions[0] = bv_from_bool(false);
+    env->valid_actions[1] = bv_from_bool(true);
        
-    self -> _ . _valid_observations     = calloc (1, 2 * sizeof ( u32 ) );
-    self -> _ . _valid_observations[0]  = 0;
-    self -> _ . _valid_observations[1]  = 1;
+    env->valid_observations = (BitVector **) malloc(sizeof(BitVector **) * 2);
+    env->valid_observations[0] = bv_from_bool(false);
+    env->valid_observations[1] = bv_from_bool(true);
    
-    self -> _ . _valid_rewards          = calloc (1, 2 * sizeof ( u32 ) );
-    self -> _ . _valid_rewards[0]       = 0;
-    self -> _ . _valid_rewards[1]       = 1;
-   
-   double probability_t = va_arg ( * args , double );
-   if ( probability_t <= 0.0001 || probability_t >= 1.0001 ) probability_t = 0.7;
-    
-    #ifdef DEBUG
-        TRACE ( "Probability = %d\n", probability_t );
-    #endif
-    
-   self -> probability = probability_t;
+    env->valid_rewards = (BitVector **) malloc(sizeof(BitVector **) * 2);
+    env->valid_rewards[0] = bv_from_bool(false);
+    env->valid_rewards[1] = bv_from_bool(true);
+    env->bias = bias;
 
-   srand(time(NULL));
-   u32 random_index = rand() % 2;
-   self->_._observation = self->_._valid_observations[random_index];
-    
-   //reward(self) = 0;
-   return self;
+    env->observation = env->valid_observations[0]; // set the initial observation
+    env->action = env->valid_actions[0];
+    env->reward = env->valid_rewards[0];
+    return env;
 }
 
-double __rp() { return (double) rand() / (double)RAND_MAX; }
+Percept * percept_create(BitVector *observation, BitVector *reward) {
+    Percept *percept = (Percept *) malloc(sizeof(Percept));
+    percept->observation = observation;
+    percept->reward = reward;
+    return percept;
+}
 
-u32Tuple* perform_action ( void * _self, u32 action_t )
-{
-    struct Coin_Flip * self = _self;
+Percept * perform_action(Env *env, BitVector *action) {
+    //TODO: Leaking some memory here.
+    assert(is_valid_action(env, action));
 
-    #ifdef DEBUG
-        TRACE ( "Action = %d\n", action_t );
-    #endif
+    env->action = action;
     
-    BLOCK_START
-        u08 is_valid = 0x00; 
-        foreach ( u32 const * a , valid_actions(self) )
-            if ( * a == action_t ) is_valid = !(is_valid);
-        assert ( is_valid != 0x00 );
-    BLOCK_END
-
-    self -> _ . _action = action_t;
+    BitVector *observation;
+    BitVector *reward;
     
-    u32 observation_t , reward_t;
-    
-    if (__rp() > probability(self) ){
-        observation_t = 1;
+    if (rp() > env->bias){
+        observation = bv_from_bool(true);
     } else {
-        observation_t = 0;
+        observation = bv_from_bool(false);
     }
     
-    reward_t = ( action_t == observation_t ) ? 1 : 0;
-    
-    #ifdef DEBUG
-        TRACE ( "Observation = %d Reward = %d\n", observation_t, reward_t );
-    #endif
+    reward = bv_from_bool(bv_eq(action, observation)); // yeah..
 
-    self -> _ . _observation    = observation_t;
-    self -> _ . _reward         = reward_t;
+    env->observation = observation;
+    env->reward = reward;
 
-    u32Tuple* tuple = calloc (1, sizeof(u32Tuple));
-    tuple -> first = observation_t;
-    tuple -> second = reward_t;
-
-    return tuple;
+    return percept_create(observation, reward);
 }
 
-static void CF_print(void * _self)
-{
-    struct Coin_Flip * self = _self;
-    printf ("Prediction = %x, Observation = %x, Reward = %x\n",
-            action(self),observation(self),reward(self));
+uint32_t action_bits(Env *env) {
+    return 1;
 }
 
-void * CF_cpy ( void * _self ) 
-{
-    struct Coin_Flip * self = _self;
-    return new ( Coin_Flip , probability(_self) );
+uint32_t observation_bits(Env *env) {
+    return 1;
 }
 
-static const struct Class _Coin_Flip = {
-    sizeof(struct Coin_Flip), CF_init, NULL, CF_cpy, NULL
-};
+uint32_t reward_bits(Env *env) {
+    return 1;
+}
 
-const void * Coin_Flip = & _Coin_Flip;
+uint32_t percept_bits(Env *env) {
+    return observation_bits(env) + reward_bits(env);
+}
+
+bool is_valid_action(Env *env, BitVector *action) {
+    uint64_t i;
+    for (i = 0; i < env->num_actions; i++) {
+        if (bv_eq(action, env->valid_actions[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool is_valid_observation(Env *env, BitVector *observation) {
+    return bv_eq(observation, bv_from_bool(false)) || bv_eq(observation, bv_from_bool(true));
+}
+
+bool is_valid_reward(Env *env, BitVector *reward) {
+    return bv_eq(reward, bv_from_bool(false)) || bv_eq(reward, bv_from_bool(true));
+}
+
+bool is_valid_percept(Env *env, Percept *percept) {
+    return is_valid_observation(env, percept->observation) && is_valid_reward(env, percept->reward);
+}
+
+Percept *env_generate_random_percept(Env *env) {
+    return percept_create(env->valid_observations[rand() % 2], env->valid_rewards[rand() % 2]);
+}
+
+BitVector *env_max_reward(Env *env) {
+    return env->valid_rewards[1];
+}

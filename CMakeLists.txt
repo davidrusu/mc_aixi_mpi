@@ -1,16 +1,32 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 project(mc_aixi_mpi)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-    agent/agent.c
-    environment/environment.c
-    predict/context_tree.c
-    predict/context_tree_node.
-
-    search/search.c
-    summary.c
-    utils.c search/dict.c search/monte_node.c main.c)
+        _utils/macros.h
+        _utils/types.h
+        agent/agent.c
+        agent/agent.h
+        environment/coin_flip.c
+        environment/coin_flip.h
+        predict/context_tree.c
+        predict/context_tree.h
+        predict/context_tree_node.c
+        predict/context_tree_node.h
+        predict/ctw_list.c
+        predict/ctw_list.h
+        predict/ctw_test.c
+        predict/main.c
+        search/dict.c
+        search/dict.h
+        search/monte_node.h
+        search/search.c
+        bit_vector.c
+        bit_vector.h
+        LICENSE
+        main.c
+        README.md
+        utils.c)
 
 add_executable(mc_aixi_mpi ${SOURCE_FILES})

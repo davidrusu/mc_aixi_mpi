@@ -1,5 +1,5 @@
 /**
-    MC AIXI - Monte Carlo Search Tree Implemenation
+    MC AIXI - Monte Carlo Search Tree Implementation
     This is a single threaded implementation of a search tree implemented using agents.
     To get parallelism,  you should refer to search_parallel.c and use those helper functions to run several instances
     of this at once.
@@ -13,18 +13,15 @@
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
+#include <assert.h>
 #include "dict.h"
 #include "monte_node.h"
-#include "../agent/agent.h"
-#include "../environment/environment.r"
-#include "../_utils/types.h"
-#include "../_utils/macros.h"
+
 
 #define ARC4RANDOM_MAX      0x100000000
 
 #define MONTE_UNEXPLORED_BIAS 100000000000.0f
 
-// pyaixi: __init__
 MonteNode* monte_create_tree(u32 nodeType) {
     MonteNode* root = (MonteNode* ) malloc(sizeof(MonteNode));
 
@@ -40,30 +37,27 @@ MonteNode* monte_create_tree(u32 nodeType) {
     return root;
 }
 
-u32 _monte_select_action(MonteNode* tree, Agent* agent) {
-    // returns -1 if no vaild action
+BitVector * _monte_select_action(MonteNode* tree, Agent* agent) {
+    // returns -1 if no valid action
 
     float agent_horizon = agent->horizon;
-    float agent_max_reward = Agent_maximum_reward(agent)/1;
+    BitVector *max_reward = agent_max_reward(agent);
 
-    float explore_bias = agent_horizon * agent_max_reward;
+    float explore_bias = agent_horizon * bv_as_u64(max_reward);
     // 2.0f is hard-coded into the application
     float exploration_numerator = (float) (2.0f* log((double) tree->visits));
 
-//    printf("%f", exploration_numerator);
-
-    // desu??? Mondaiji-tachi ga Isekai kara Kuru Sou Desu yo?
-    u32 best_action = 0;
+    BitVector *best_action = NULL;
     double best_priority = -FLT_MAX;
     //    printf("b p: %f\n", best_priority);
     u32 i = 0;
-    for(i = 0; i < agent->environment->num_actions; i++) {
-        u32 action = agent->environment->_valid_actions[i];
+    for(i = 0; i < agent->env->num_actions; i++) {
+        BitVector *action = agent->env->valid_actions[i];
         MonteNode* node = dict_find(tree->actions, action);
 
         double priority = 0;
 
-        if(node == NULL  || node->visits == 0)  {
+        if(node == NULL || node->visits == 0)  {
             priority = MONTE_UNEXPLORED_BIAS;
         } else {
           priority = node->mean - (explore_bias * sqrt(exploration_numerator / node->visits));
@@ -75,27 +69,26 @@ u32 _monte_select_action(MonteNode* tree, Agent* agent) {
             best_action = action;
             best_priority = priority;
         }
-
     }
+    assert(best_action != NULL);
     //    printf("b p: %f\n", best_priority);
     return best_action;
 }
 
 // pyaixi: sample(agent, horizon)
 // notes: we require some more work here
-float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
+double monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
     double reward = 0.0;
 
     if(horizon == 0) {
         // reached maximum search depth
         return reward;
     } else if(tree->type == NODE_TYPE_CHANCE) {
-        u32Tuple* tuple = Agent_generate_percept_and_update(agent);
+        Percept* percept = agent_generate_percept_and_update(agent);
 	
-        u32 observation = tuple->first;
-        u32 random_reward = tuple->second;
-	//	printf("tuple %u %u\n", observation, random_reward);
-	
+        BitVector *observation = percept->observation;
+        BitVector *random_reward = percept->reward;
+
         bool notInTreeYet = dict_find(tree->children, observation) == NULL;
 	
         if(notInTreeYet) {
@@ -113,13 +106,13 @@ float monte_sample(MonteNode* tree, Agent* agent, u32 horizon) {
         }
 
         // Recurse
-        reward = random_reward + monte_sample(child, agent, horizon - 1);
+        reward = bv_as_u64(random_reward) + monte_sample(child, agent, horizon - 1);
     } else if (tree->visits == 0) {
-        reward = Agent_playout(agent, horizon);
+        reward = agent_playout(agent, horizon);
     }
     else {
-        u32 action = _monte_select_action(tree, agent);
-        Agent_model_update_action(agent, action);
+        BitVector * action = _monte_select_action(tree, agent);
+        agent_model_update_action(agent, action);
 
         MonteNode* child = dict_find(tree->actions, action);
         if(child == NULL) {

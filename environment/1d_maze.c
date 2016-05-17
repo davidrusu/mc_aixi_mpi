@@ -15,8 +15,6 @@
 #include "../_utils/macros.h"
 #include "class.h"
 #include "class.r"
-#include "environment.h"
-#include "environment.r"
 #include "1d_maze.h"
 #include "1d_maze.r"
 
@@ -52,7 +50,7 @@ void * CF_init ( void * _self, va_list * args )
         u32 * _POSSIBLE_BOARDS = generate_boards();
         self->_._valid_observations = malloc ( sizeof(u32) * _N_POSSIBLE_BOARDS );
     
-        foreach(u32 * ob in _POSSIBLE_BOARDS) 
+        foreach(u32 * ob in _POSSIBLE_BOARDS)
         {   self->_._valid_observations = *ob;
             #ifdef DEBUG 
                 TRACE("VALID BOARD = %x\n",*ob);
@@ -118,7 +116,3 @@ u32 * generate_boards(void) {
 
     return tmp;
 }
-
-void bit_set ( u08 bit , u32 * bstring ){     bstring =         
-u32 __rand_d (u08 start , u08 finish ){     return rand()%(start-finish)+start; } 
-double __rp() { return (double) rand() / (double)RAND_MAX; }

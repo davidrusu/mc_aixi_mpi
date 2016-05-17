@@ -26,6 +26,10 @@ void ctw_list_push(CTWNodeList *, ContextTreeNode *);
 
 ContextTreeNode *ctw_list_pop(CTWNodeList *);
 
+void ctw_list_push_front(CTWNodeList *ctw_list, ContextTreeNode *node);
+
+ContextTreeNode *ctw_list_pop_front(CTWNodeList *ctw_list);
+
 void ctw_list_clear(CTWNodeList *);
 
 #endif

@@ -4,6 +4,9 @@
 #include "../bit_vector.h"
 #include "context_tree.h"
 
+#define BINARY_MODE 0
+#define ASCII_MODE 1
+
 void load_from_file(ContextTree *tree) {
   char file_name[1000];
   printf("Enter a file name: ");
@@ -14,33 +17,59 @@ void load_from_file(ContextTree *tree) {
     printf("File not found '%s'\n", file_name);
     return;
   }
+
+  fseek(fp, 0, SEEK_END);
+  uint64_t file_size = ftell(fp);
+  rewind(fp); // move file pointer back to start of file
+  printf("Reading '%s' size: %llu kb\n", file_name, file_size / 1024);
   char line[1000];
   uint64_t line_num = 0;
   while (fgets(line, sizeof(line), fp) != NULL) {
     line_num += 1;
-    if (line_num % 100 == 0) {
-      printf("\rprocessing line %llu\t", line_num);
+    if (line_num % 2 == 0) {
+      printf("\r");
+      uint64_t i;
+      for (i = 0; i < (ftell(fp) * 80) / (file_size); i++) {
+	printf("#");
+      }
     }
     int32_t i;
+    BitVector *v = bv_create();
     for (i = 0; i < strlen(line); i++) {
       char c = line[i];
-      BitVector *v = bv_from_char(c);
-      ctw_update_vector(tree, v);
-      bv_free(v);
+      BitVector *vc = bv_from_char(c);
+      bv_append(v, vc);
+      bv_free(vc);
     }
+    ctw_update_vector(tree, v);
+    bv_free(v);
   }
+  
   fclose(fp);
+  printf("\n");
 }
 
+#ifdef REPL
 int main(int argc, char **argv) {
   printf("repl for testing CTW\n");
-  printf("Size of ct_node %lu\n", sizeof(ContextTreeNode));
   char pattern[1000];
-  ContextTree *tree = ctw_create(8*30);
+  ContextTree *tree = ctw_create(8 * 10);
+  
+  uint8_t mode = ASCII_MODE;
   
   for (;;) {
+    if (mode == ASCII_MODE) {
+      printf("ASCII ");
+    } else if (mode == BINARY_MODE) {
+      printf("BINARY ");
+    } else {
+      printf("UNKNOWN %u ", mode);
+    }
+    
+    printf("> ");
+    
     if (fgets(pattern, sizeof(pattern), stdin) == NULL) {
-      continue;
+      exit(0);
     }
     pattern[strlen(pattern)-1] = 0; // remove \n
     if (strcmp(pattern, ":?") == 0) {
@@ -58,20 +87,46 @@ int main(int argc, char **argv) {
     } else if (strcmp(pattern, ":f") == 0) {
       load_from_file(tree);
       continue;
+    } else if (strcmp(pattern, ":m") == 0) {
+      if (mode == BINARY_MODE) {
+	mode = ASCII_MODE;
+      } else {
+	mode = BINARY_MODE;
+      }
+      continue;
     }
+
+    bool valid = true;
     int32_t i;
     for (i = 0; i < strlen(pattern); i++) {
       char c = pattern[i];
-      BitVector *v = bv_from_char(c);
-      ctw_update_vector(tree, v);
-      bv_free(v);
+      if (mode == ASCII_MODE) {
+	BitVector *v = bv_from_char(c);
+	ctw_update_vector(tree, v);
+	bv_free(v);
+      } else {
+	if (c != '0' && c != '1') {
+	  ctw_revert(tree, i);
+	  printf("Only '0' and '1' are valid in binary mode\n");
+	  valid = false;
+	  break;
+	}
+	ctw_update_symbol(tree, c == '1');
+      }
     }
-    printf("Prediction:\n");
-    BitVector *prediction = ctw_gen_random_symbols_and_update(tree, 8 * 100);
-    bv_print_ascii(prediction);
-    bv_free(prediction);
+    if (!valid) {
+      continue;
+    }
     
-    //ctw_clear(tree);
+    printf("Prediction:\n");
+    BitVector *prediction = ctw_gen_random_symbols(tree, 50 * 8);
+    printf("%s", pattern);
+    if (mode == ASCII_MODE) {
+      bv_print_ascii(prediction);
+    } else {
+      bv_print(prediction);
+    }
+    bv_free(prediction);
   }
-  return 0;
 }
+#endif

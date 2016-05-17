@@ -31,20 +31,12 @@
     typedef enum { action_update, percept_update } update_enum;
 #endif
 
-#ifndef TUPLE_32
-#define TUPLE_32
-    typedef struct {
-        u32             first;
-        u32             second;
-    } u32Tuple;
-#endif
-
 #ifndef UNDO
 #define UNDO
     typedef struct {
-        u32             age;
-        u32             total_reward;
-        u32             history_size;
+        u64             age;
+        u64             total_reward;
+        u64             history_size;
         update_enum     last_update;
     } AgentUndo;
 #endif

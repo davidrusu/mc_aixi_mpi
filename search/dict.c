@@ -12,7 +12,7 @@
 #include "dict.h"
 #include "monte_node.h"
 
-int dict_find_index(dict_t dict, const int key) {
+int dict_find_index(dict_t dict, void * key) {
     for (int i = 0; i < dict->len; i++) {
         if (dict->entry[i].key == key) {
             return i;
@@ -21,12 +21,12 @@ int dict_find_index(dict_t dict, const int key) {
     return -1;
 }
 
-MonteNode* dict_find(dict_t dict, const int key) {
+MonteNode* dict_find(dict_t dict, void * key) {
     int idx = dict_find_index(dict, key);
     return idx == -1 ? NULL : dict->entry[idx].value;
 }
 
-void dict_add(dict_t dict, const int key, MonteNode* value) {
+void dict_add(dict_t dict, void * key, MonteNode* value) {
     int idx = dict_find_index(dict, key);
     if (idx != -1) {
         dict->entry[idx].value = value;
@@ -49,7 +49,6 @@ dict_t dict_new(void) {
 }
 
 void dict_free(dict_t dict) {
-
     // be sure to cleanup all these pointers...
     // todo: RAII violation? Technically, the dictionary did not create these...
     // #WhoCares

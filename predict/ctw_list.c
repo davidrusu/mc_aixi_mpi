@@ -72,6 +72,33 @@ ContextTreeNode *ctw_list_pop(CTWNodeList *ctw_list) {
   return node;
 }
 
+void ctw_list_push_front(CTWNodeList *ctw_list, ContextTreeNode *node) {
+  if (ctw_list->size == ctw_list->capacity) {
+    __ctw_list_grow(ctw_list);
+  }
+  uint64_t i;
+  for (i = ctw_list->size; i > 0; i--) {
+    ctw_list->nodes[i] = ctw_list->nodes[i-1];
+  }
+  ctw_list->nodes[0] = node;
+  ctw_list->size += 1;
+}
+
+ContextTreeNode *ctw_list_pop_front(CTWNodeList *ctw_list) {
+  if (ctw_list->size == 0) {
+    perror("The list is empty, can't pop\n");
+  }
+  ContextTreeNode *node = ctw_list->nodes[0];
+
+  uint64_t i;
+  for (i = 0; i < ctw_list->size-1; i++) {
+    ctw_list->nodes[i] = ctw_list->nodes[i+1];
+  }
+  ctw_list->size -= 1;
+
+  return node;
+}
+
 void ctw_list_clear(CTWNodeList *ctw_list) {
   // Just sets size to 0
   // we may want to resize the array if memory is a problem

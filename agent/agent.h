@@ -1,60 +1,55 @@
 #ifndef AGENT_H
-    #define AGENT_H
-    #include <stdarg.h>
-    #include "../_utils/types.h"
-    #include "../bit_vector.h"
-    #include "../predict/context_tree.h"
+#define AGENT_H
+#include <stdarg.h>
+#include "../environment/coin_flip.h"
+#include "../_utils/types.h"
+#include "../bit_vector.h"
+#include "../predict/context_tree.h"
 
-    typedef struct Agent
-    {
-        struct Environment * environment;
-        va_list              _options;
-        double               total_reward;
-        update_enum          last_update;
-        u32                  age;
-        u32                  horizon;
-        u32                  learning_period;
-        ContextTree*         context_tree;
-    } Agent;
+typedef struct Agent {
+    Env * env;
+    u64 total_reward;
+    update_enum last_update;
+    u64 age;
+    u32 horizon;
+    u32 learning_period;
+    ContextTree * context_tree;
+} Agent;
 
-    Agent* Agent_init ( Agent* self, void * _env, u32 learn  );
-    AgentUndo* Agent_clone_into_temp                   (Agent* self);
+Agent* agent_create(Env *env, u32 learning_period);
 
-    double  Agent_average_reward                       ( Agent* self);
+AgentUndo* agent_clone_into_temp(Agent *self);
 
-    u32  Agent_generate_random_action                  ( Agent* self);
-    u32  Agent_maximum_action                          ( Agent* self  );
-    u32  Agent_maximum_reward                          ( Agent* self  );
-    u32  Agent_model_size                              ( Agent* self  );
+double agent_average_reward(Agent *self);
 
-    void  Agent_model_update_action                    ( Agent* self, u32 action );
-    BitVector * Agent_encode_action                    ( Agent* self , u32 action );
+BitVector * agent_generate_random_action(Agent *self);
+u64 agent_model_size(Agent* self);
 
-    // decoding
-    u32 Agent_decode_action                            (Agent* self , BitVector* symbols);
-    u32 Agent_decode_observation                       (Agent* self , BitVector* symbols);
-    u32 Agent_decode_reward                            (Agent* self, BitVector* symbols);
-    u32Tuple* Agent_decode_percept                     (Agent* self , BitVector* symbols);
+void agent_model_update_action(Agent *self, BitVector *action);
 
-    // generators
-    u32 Agent_generate_action                          (Agent* self);
-    u32Tuple * Agent_generate_percept                         (Agent* self );
-    u32Tuple * Agent_generate_percept_and_update              (Agent* self );
+Percept * agent_decode_percept(Agent* self, BitVector* symbols);
 
-    u32 Agent_history_size                             (Agent* self );
-    double Agent_get_predicted_action_probability (Agent* self , u32 action);
-    u32 Agent_maximum_bits_needed                      (Agent* self );
+// generators
+BitVector * agent_generate_action(Agent* self);
+Percept * agent_generate_percept(Agent* self);
+Percept * agent_generate_percept_and_update(Agent* self);
 
-    void Agent_model_revert                            (Agent* self , AgentUndo* undo);
-    void Agent_model_update_percept                    ( Agent* self , u32 observation, u32 reward );
+u64 agent_history_size(Agent* self);
+double agent_get_predicted_action_probability(Agent* self , BitVector *action);
+u32 agent_maximum_bits_needed(Agent* self);
 
+void agent_model_revert(Agent* self , AgentUndo* undo);
+void agent_model_update_percept(Agent* self, Percept *percept);
 
-    BitVector * Agent_encode_percept                   ( Agent* self, u32 observation, u32 reward);
+BitVector * agent_encode_percept(Agent* self, Percept *percept);
 
-    double Agent_percept_probability                   (Agent* self, u32 observation, u32 reward);
-    double Agent_playout                             (Agent* self, u32 horizon);
+double agent_percept_probability(Agent* self, Percept *percept);
+double agent_playout(Agent* self, u32 horizon);
 
-    u32 Agent_search                                 ( Agent* self);
-    u32 Agent_search_mean                            ( Agent* self, double *mean);
-    void  Agent_reset                                  ( Agent* self );
+BitVector * agent_search(Agent* self);
+BitVector * agent_search_mean(Agent* self, double *mean);
+void agent_reset(Agent* self);
+
+BitVector * agent_max_reward(Agent *self);
+
 #endif

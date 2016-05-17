@@ -8,7 +8,6 @@
 #include "../agent/agent.h"
 #include "../_utils/types.h"
 
-// pyaixi: class members
 typedef struct MonteNode {
     double mean ;
     int type;
@@ -20,8 +19,8 @@ typedef struct MonteNode {
 } MonteNode;
 
 MonteNode* monte_create_tree(u32 nodeType);
-u32 _monte_select_action(MonteNode* tree, Agent* agent);
-float monte_sample(MonteNode* tree, Agent* agent, u32 horizon);
+BitVector * _monte_select_action(MonteNode* tree, Agent* agent);
+double monte_sample(MonteNode* tree, Agent* agent, u32 horizon);
 
 
 #endif

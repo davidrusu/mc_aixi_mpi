@@ -20,6 +20,21 @@ void bv_free(BitVector *bv) {
   free(bv);
 }
 
+BitVector *bv_clone(BitVector *original) {
+  BitVector *clone = bv_create();
+  uint64_t i;
+  for (i = 0; i < original->size; i++) {
+    bv_push(clone, bv_test(original, i));
+  }
+  return clone;
+}
+
+BitVector *bv_from_bool(bool symbol) {
+  BitVector *bv = bv_create();
+  bv_push(bv, symbol);
+  return  bv;
+}
+
 BitVector *bv_from_char(char c) {
   BitVector *bv = bv_create();
   int64_t j;
@@ -29,7 +44,7 @@ BitVector *bv_from_char(char c) {
   return bv;
 }
 
-BitVector *bv_from_uint32(uint32_t v) {
+BitVector *bv_from_u32(uint32_t v) {
   BitVector *bv = bv_create();
   int64_t j;
   for (j=sizeof(uint32_t) * 8 - 1; j >= 0; j--) {
@@ -38,7 +53,7 @@ BitVector *bv_from_uint32(uint32_t v) {
   return bv;
 }
 
-BitVector *bv_from_uint64(uint64_t v) {
+BitVector *bv_from_u64(uint64_t v) {
   BitVector *bv = bv_create();
   int64_t j;
   for (j=sizeof(uint64_t) * 8 - 1; j >= 0; j--) {
@@ -50,31 +65,22 @@ BitVector *bv_from_uint64(uint64_t v) {
 BitVector *bv_from_double(double d) {
   // interpret the double bits as an int
   uint64_t v = *((uint64_t *) &d);
-  return bv_from_uint64(v);
+  return bv_from_u64(v);
 }
 
 BitVector *bv_from_float(float f) {
   // interpret the float bits as an int
   uint32_t v = *((uint32_t *) &f);
-  return bv_from_uint32(v);
+  return bv_from_u32(v);
 }
 
-uint32_t bv_peek_uint32(BitVector *bv) {
-  uint32_t result = 0;
-  int64_t i;
-  for (i = sizeof(uint32_t) * 8; i > 0; i--) {
-    result = result << 1;
-    if (bv_test(bv, bv->size - i)) {
-      result += 1;
-    }
-  }
-  return result;
-}
-
-uint64_t bv_peek_uint64(BitVector *bv) {
+uint64_t bv_as_u64(BitVector *bv) {
   uint64_t result = 0;
-  int64_t i;
-  for (i = sizeof(uint64_t) * 8; i > 0; i--) {
+  int64_t i = sizeof(uint64_t) * 8;
+  if (bv->size < i) {
+    i = bv->size;
+  }
+  for (; i > 0; i--) {
     result = result << 1;
     if (bv_test(bv, bv->size - i)) {
       result += 1;
@@ -145,13 +151,43 @@ void bv_clear(BitVector *bv) {
   bv->size = 0;
 }
 
+bool bv_eq(BitVector *a, BitVector *b) {
+  if (a->size != b->size) {
+    return false;
+  }
+  uint64_t i;
+  for (i = 0; i < a->size; i++) {
+    if (bv_test(a, i) != bv_test(b, i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+char *bv_str(BitVector *bv) {
+  char *result = (char *) malloc(sizeof(char) * bv->size + 1);
+  uint64_t i;
+  for (i = 0; i < bv->size; i++) {
+    if (bv_test(bv, i)) {
+      result[i] = '1';
+    } else {
+      result[i] = '0';
+    }
+  }
+  result[bv->size] = NULL;
+  return result;
+}
+
 void bv_print(BitVector *bv) {
-  printf("Size: %llu\n", bv->size);
   if (bv->size > 400) {
+    printf("Size: %llu\n", bv->size);
     return;
   }
   uint64_t i;
   for (i = 0; i < bv->size; i++) {
+    if (i % 32 == 0) {
+      printf(" ");
+    }
     if (bv_test(bv, i)) {
       printf("1");
     } else {
@@ -205,4 +241,8 @@ BitVector *bv_slice(BitVector *bv, uint64_t start, uint64_t end) {
     bv_push(slice, bv_test(bv, i));
   }
   return slice;
+}
+
+BitVector *bv_truncate(BitVector *bv, uint64_t size) {
+  return bv_slice(bv, 0, size);
 }

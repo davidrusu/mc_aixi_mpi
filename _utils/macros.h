@@ -62,7 +62,7 @@
     #if defined NDEBUG
         #define TRACE( format, ... ) ( ( void ) 0 )
     #else
-        #define TRACE( format, ... )   printf( "%s::%s(%d)" format, __FILE__, __FUNCTION__,  __LINE__, __VA_ARGS__ )
+        #define TRACE( format )   printf( "%s::%s(%d)" format, __FILE__, __FUNCTION__,  __LINE__)
     #endif
 
     // % Print error info and exit

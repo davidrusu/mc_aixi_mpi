@@ -40,6 +40,13 @@ void ctw_print(ContextTree *tree) {
   bv_print(tree->history);
 }
 
+void __print_padding(uint64_t size, char c) {
+  uint64_t i;
+  for (i = 0; i < size; i++) {
+    printf("%c", c);
+  }
+}
+
 void ctw_update_context(ContextTree *tree) {
   if (tree->history->size < tree->depth) {
     perror("Not enough history to update context\n");
@@ -49,9 +56,9 @@ void ctw_update_context(ContextTree *tree) {
   ctw_list_push(tree->context, tree->root);
   ContextTreeNode *node = tree->root;
   uint64_t update_depth = 1;
-  int64_t i;
-  for (i = tree->history->size-1; i >= 0; i--) {
-    bool symbol = bv_test(tree->history, i);
+  uint64_t i;
+  for (i = 0; i < tree->history->size; i++) {
+    bool symbol = bv_test(tree->history, tree->history->size - i - 1);
 
     if (symbol && node->one_child != NULL) {
       node = node->one_child;
@@ -86,9 +93,9 @@ void ctw_revert(ContextTree *tree, uint64_t n) {
     if (tree->history->size >= tree->depth) {
       ctw_update_context(tree);
       
-      int64_t j;
-      for (j = tree->depth-1; j >= 0; j--) {
-	ctw_node_revert(ctw_list_get(tree->context, j), symbol);
+      uint64_t j;
+      for (j = 0; j < tree->depth; j++) {
+        ctw_node_revert(ctw_list_get(tree->context, tree->depth - j - 1), symbol);
       }
     }
   }
@@ -97,9 +104,9 @@ void ctw_revert(ContextTree *tree, uint64_t n) {
 void ctw_update_symbol(ContextTree *tree, bool symbol) {
   if (tree->history->size >= tree->depth) {
     ctw_update_context(tree);
-    int64_t i;
-    for (i = tree->depth-1; i >= 0; i--) {
-      ctw_node_update(ctw_list_get(tree->context, i), symbol);
+    uint64_t i;
+    for (i = 0; i < tree->depth; i++) {
+      ctw_node_update(ctw_list_get(tree->context, tree->depth - i - 1), symbol);
     }
   }
   bv_push(tree->history, symbol);

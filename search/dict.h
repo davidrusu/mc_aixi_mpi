@@ -7,7 +7,7 @@
 typedef struct MonteNode MonteNode;
 
 typedef struct dict_entry_s {
-    int key;
+    void * key;
     MonteNode* value;
 } dict_entry_s;
 
@@ -17,13 +17,13 @@ typedef struct dict_s {
     dict_entry_s *entry;
 } dict_s, *dict_t;
 
-int dict_find_index(dict_t, const int);
+int dict_find_index(dict_t, void *);
 
-MonteNode* dict_find(dict_t, const int);
+MonteNode* dict_find(dict_t, void *);
 
-void dict_add(dict_t, const int, MonteNode*);
+void dict_add(dict_t, void *, MonteNode *);
 
-dict_t dict_new(void);
+dict_t dict_new();
 
 void dict_free(dict_t);
 

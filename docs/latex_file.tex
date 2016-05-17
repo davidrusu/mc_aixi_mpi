@@ -1431,7 +1431,7 @@ BitVector *bv_from_char(char);
 
 BitVector *bv_from_uint32(uint32_t);
 
-BitVector *bv_from_uint64(uint64_t);
+BitVector *bv_from_u64(uint64_t);
 
 void bv_append(BitVector *, BitVector *);
 
@@ -1730,7 +1730,7 @@ BitVector * Agent_encode_action(Agent* self, u32 action) {
   
 BitVector * Agent_encode_percept ( Agent * self, u32 observation, u32 reward) {
   BitVector* a = bv_from_uint32(reward);
-  BitVector* b = bv_from_uint32(observation);
+  BitVector* b = bv_from_u32(observation);
   bv_append(a, b);
   bv_free(b);
   return a;
