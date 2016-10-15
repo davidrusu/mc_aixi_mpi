@@ -62,6 +62,19 @@ BitVector *bv_from_u64(uint64_t v) {
   return bv;
 }
 
+BitVector *bv_from_str(char *str) {
+  assert(str != NULL);
+  BitVector *bv = bv_create();
+  uint64_t i = 0;
+  while (str[i] != NULL) {
+    char c = str[i];
+    assert(c == '1' || c == '0');
+    bv_push(bv, c == '1');
+    i++;
+  }
+  return bv;
+}
+
 BitVector *bv_from_double(double d) {
   // interpret the double bits as an int
   uint64_t v = *((uint64_t *) &d);

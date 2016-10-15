@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include "environment/coin_flip.h"
+#include "environment/env.h"
 #include "agent/agent.h"
 #include "_utils/macros.h"
 
@@ -233,7 +233,7 @@ int main(int argc, const char* argv[]) {
 
     TRACE("Creating environment...\n");
 
-    Env* env = env_create(0);
+    Env* env = env_create(0.8);
 
     TRACE("Creating agent... please be patient\n");
 

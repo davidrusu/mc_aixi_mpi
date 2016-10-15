@@ -2,12 +2,16 @@ cmake_minimum_required(VERSION 3.5)
 project(mc_aixi_mpi)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#add_definitions(-D ENV_COIN_FLIP)
+add_definitions(-D ENV_1D_MAZE)
 
 set(SOURCE_FILES
         _utils/macros.h
         _utils/types.h
         agent/agent.c
         agent/agent.h
+        #environment/1d_maze.c
+        #environment/1d_maze.h
         environment/coin_flip.c
         environment/coin_flip.h
         predict/context_tree.c
@@ -27,6 +31,6 @@ set(SOURCE_FILES
         LICENSE
         main.c
         README.md
-        utils.c)
+        utils.c environment/env.h)
 
 add_executable(mc_aixi_mpi ${SOURCE_FILES})

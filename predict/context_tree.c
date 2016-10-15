@@ -67,9 +67,9 @@ void ctw_update_context(ContextTree *tree) {
     } else {
       ContextTreeNode *new_node = ctw_node_create();
       if (symbol) {
-	node->one_child = new_node;
+        node->one_child = new_node;
       } else {
-	node->zero_child = new_node;
+        node->zero_child = new_node;
       }
       node = new_node;
     }

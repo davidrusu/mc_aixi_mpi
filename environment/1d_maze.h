@@ -3,40 +3,50 @@
 // EMAIL:    robert@morouney.com 
 // FILE:     coin_flip.h
 // CREATED:  2016-04-21 16:23:23
-// MODIFIED: 2016-04-22 17:54:18
+// MODIFIED: 2016-04-22 22:15:04
 ////////////////////////////////////////////////////////////////////
 
-#ifndef 1D_MAZE_H
-    #define 1D_MAZE_H
-    #include <stddef.h>
+#ifndef COIN_FLIP_H
+#define COIN_FLIP_H
+#include <stddef.h>
+#include "../bit_vector.h"
 
-    extern const void * 1D; 
-    // Usage
-    //      new ( 1D , (u32) Squares );
-    //
-    
-   
-    //GAME CONFIG VARS///////////////////////////////////////////////////
-    const u16 SPACES_TOTAL      =   9;
-    const u16 SPACES_MOVEABLE   =   SPACES_TOTAL - 2;
-    const u16 POSSIBLE_BOARDS   =   SPACES_MOVEABLE * (SPACES_MOVEABLE -1)
+typedef struct Env {
+    int num_actions;
+    BitVector **valid_actions;
+    BitVector **valid_observations;
+    BitVector **valid_rewards;
+    BitVector *action;
+    BitVector *observation;
+    BitVector *reward;
+    bool is_finished;
 
-    /// actions
-    const u08 NONE              =   0;
-    const u08 LEFT              =   1;
-    const u08 RIGHT             =   2;
+    // Env specific fields
+    uint64_t board_state;
+    uint64_t num_states;
+} Env;
 
-    /// board
-    const u08 WALL              =   3;
-    const u08 PLAYER            =   2;
-    const u08 EXIT              =   1;
-    const u08 EMPTY             =   0;
+typedef struct Percept {
+    BitVector *observation;
+    BitVector *reward;
+} Percept;
 
+Env * env_create(double);
 
+Percept * percept_create(BitVector *observation, BitVector *reward);
 
-    double __rp();
-    static u32Tuple * perform_action ( void * _self, u32 action_t );
-    static void CF_print(void * _self);
+Percept *perform_action(Env *env, BitVector *action);
+uint32_t action_bits(Env *env);
+uint32_t observation_bits(Env *env);
+uint32_t reward_bits(Env *env);
+uint32_t percept_bits(Env *env);
 
+bool is_valid_action(Env *env, BitVector *action);
+bool is_valid_observation(Env *env, BitVector *observation);
+bool is_valid_reward(Env *env, BitVector *reward);
+bool is_valid_percept(Env *env, Percept *percept);
+
+Percept *env_generate_random_percept(Env *env);
+BitVector *env_max_reward(Env *env);
 #endif
 

@@ -28,6 +28,8 @@ BitVector *bv_from_u32(uint32_t);
 
 BitVector *bv_from_u64(uint64_t);
 
+BitVector *bv_from_str(char *);
+
 void bv_append(BitVector *, BitVector *);
 
 uint64_t bv_as_u64(BitVector *);

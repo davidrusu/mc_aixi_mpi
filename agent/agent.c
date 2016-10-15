@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "../_utils/types.h"
 #include "../predict/context_tree.h"
+#include "../environment/env.h"
 #include "agent.h"
 #include "../search/monte_node.h"
 #include <assert.h>

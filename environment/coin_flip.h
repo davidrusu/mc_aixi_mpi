@@ -20,6 +20,8 @@ typedef struct Env {
     BitVector *observation;
     BitVector *reward;
     bool is_finished;
+
+    // Env specific fields
     double bias;
 } Env;
 
